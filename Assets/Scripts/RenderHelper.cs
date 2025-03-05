@@ -6,8 +6,6 @@ namespace Assets.Scripts
 {
     public class RenderHelper
     {
-        private static readonly int chunkSize = 250;
-
         public struct PlaneChunk
         {
             public List<GameObject> chunkGameObjects;
@@ -20,7 +18,7 @@ namespace Assets.Scripts
 
             private Transform parent;
 
-            public PlaneChunk(Vector2 position)
+            public PlaneChunk(Vector2 position, int size)
             {
                 this.chunkGameObjects = new List<GameObject>();
                 this.position = position;
@@ -28,7 +26,8 @@ namespace Assets.Scripts
                 this.parent = new GameObject("Level Chunk").transform;
                 this.gameObject.transform.parent = this.parent;
                 this.transform = gameObject.transform;
-                gameObject.transform.localScale = new Vector3(chunkSize, 0, chunkSize);
+                this.gameObject.transform.position = new Vector3(position.x, 0, position.y);
+                gameObject.transform.localScale = new Vector3(size, 0, size);
             }
 
             public void AddGeneratedObjectsToChunk(List<GameObject> gameObjects)

@@ -7,28 +7,40 @@ namespace Assets.Scripts
 {
     public class LevelZeroManager : GameManager
     {
-        public List<PlaneChunk> planeChunks = new List<PlaneChunk>();
+        public int chunkSize = 10;
 
-        private Vector2 currentPlayerPosition;
+        public int viewDistance;
 
-        public int chunkDistanceRadius = 500;
+        private List<PlaneChunk> planeChunks = new List<PlaneChunk>();
 
-        private void Awake()
+        private void Start()
         {
-            currentPlayerPosition = new Vector2();
+            
         }
 
         private void Update()
         {
-            currentPlayerPosition = tPlayer[0].position;
+            
+        }
 
-            for (int x = -chunkDistanceRadius; x <= chunkDistanceRadius; x++)
+        [Button]
+        public void Generate()
+        {
+            // Works only for this distance needs more work
+            int distanceBetweenChunks = chunkSize * chunkSize;
+
+            for (int x = -distanceBetweenChunks; x <= distanceBetweenChunks; x += distanceBetweenChunks)
             {
-                for (int z = -chunkDistanceRadius; z <= chunkDistanceRadius; z++)
+                for (int y = -distanceBetweenChunks; y <= distanceBetweenChunks; y += distanceBetweenChunks)
                 {
-                    
+                    planeChunks.Add(new PlaneChunk(new Vector2(x, y), chunkSize));
                 }
             }
+        }
+
+        private struct LevelZeroGeneration
+        {
+
         }
     }
 }
