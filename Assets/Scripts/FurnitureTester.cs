@@ -1,12 +1,16 @@
 using UnityEngine;
 using NaughtyAttributes;
+using static Assets.Scripts.FurnitureRandomizer;
 
 namespace Assets.Scripts
 {
     public class FurnitureTester : MonoBehaviour
     {
+        [Header("Table Properties")]
+        public float surfacePercentage = 100f;
         public GameObject table;
         public GameObject appliance;
+        public ElementType elementType;
 
         [Button]
         public void Test()
@@ -17,7 +21,7 @@ namespace Assets.Scripts
                 appliance
             };
 
-            FurnitureRandomizer.AddFurnitureElements(table, appliances, 1f, 2);
+            AddFurnitureElementsRandomly(table, appliances, elementType, surfacePercentage, randomLength);
         }
     }
 }
