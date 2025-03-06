@@ -8,8 +8,10 @@ namespace Assets.Scripts
     {
         [Header("Table Properties")]
         public float surfacePercentage = 100f;
+        public float heightOffset = 0f;
         public GameObject table;
-        public GameObject appliance;
+        public GameObject appliance1;
+        public GameObject appliance2;
         public ElementType elementType;
 
         [Button]
@@ -18,10 +20,11 @@ namespace Assets.Scripts
             int randomLength = Random.Range(0, 10);
             GameObject[] appliances = new GameObject[]
             {
-                appliance
+                appliance1,
+                appliance2
             };
 
-            AddFurnitureElementsRandomly(table, appliances, elementType, surfacePercentage, randomLength);
+            AddFurnitureElementsRandomly(table, appliances, elementType, surfacePercentage, randomLength, heightOffset);
         }
     }
 }

@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.Rendering.PostProcessing;
+using System.Collections.Generic;
 
 namespace Assets.Scripts
 {
@@ -10,6 +10,14 @@ namespace Assets.Scripts
             Sitting,
             Hanging,
             Sideways
+        }
+
+        public enum SortingType
+        {
+            Horizontal,
+            Vertical,
+            Grid,
+            Alternating
         }
 
         public static int GenerateSeed(int maxDigits)
@@ -25,63 +33,77 @@ namespace Assets.Scripts
             return random.Next(seedOperation);
         }
 
-        public static void AddFurnitureElementsRandomly(GameObject parentSurface, GameObject[] types, ElementType elementType, float percentage, int maxItemSpawns)
+        public static void AddFurnitureElementsRandomly(GameObject parent, GameObject[] types, ElementType elementType, float surfacePercentage, int maxItemSpawns, float sidewaysHeightOffset = 0f)
         {
-            percentage *= 0.01f;
-            Collider surfaceCollider = parentSurface.GetComponent<Collider>();
-            float surfaceOffset = surfaceCollider.bounds.extents.y; 
+            Collider surfaceCollider = parent.GetComponent<Collider>();
+            Vector3 surfaceExtents = surfaceCollider.bounds.extents;
+            surfacePercentage *= 0.01f;
+
+            List<GameObject> generatedElements = new List<GameObject>();
 
             for (int i = 0; i < types.Length; i++)
             {
                 int amount = Random.Range(0, maxItemSpawns);
-                float typeOffset;
                 Vector2 randomPos;
                 Vector3 position;
 
+                Vector3 typeExtents = types[i].GetComponent<Collider>().bounds.extents;
+
                 if (elementType == ElementType.Sitting || elementType == ElementType.Hanging)
                 {
-                    float restrictionX = surfaceCollider.bounds.extents.x * percentage;
-                    float restrictionZ = surfaceCollider.bounds.extents.z * percentage;
-                    typeOffset = types[i].GetComponent<Collider>().bounds.extents.y;
+                    float restrictionX = surfaceExtents.x * surfacePercentage;
+                    float restrictionZ = surfaceExtents.z * surfacePercentage;
+                    float typeOffsetY = types[i].GetComponent<Collider>().bounds.extents.y;
 
                     for (int j = 0; j < amount; j++)
                     {
                         randomPos = new Vector2(Random.Range(-restrictionX, restrictionX), Random.Range(-restrictionZ, restrictionZ));
-                        position = new Vector3(randomPos.x, parentSurface.transform.position.y + ((surfaceOffset + typeOffset) * ElementDirection(elementType)), randomPos.y);
+                        position = new Vector3(randomPos.x, parent.transform.position.y + ((surfaceExtents.y + typeOffsetY) * ElementDirection(elementType)), randomPos.y);
 
-                        GameObject.Instantiate(types[i], position, Quaternion.identity);
+                        generatedElements.Add(GameObject.Instantiate(types[i], position, Quaternion.identity));
                     }
                 }
 
                 else if (elementType == ElementType.Sideways)
                 {
-                    Vector3 surfaceExtents = surfaceCollider.bounds.extents;
-                    Vector3 typeExtents = types[i].GetComponent<Collider>().bounds.extents;
-
                     int halfAmount = amount / 2;
+                    int rand;
+                    float randAxis;
+                    float side;
+                    float typeOffsetX;
+                    float typeOffsetZ;
 
                     for (int j = 0; j < halfAmount; j++)
                     {
-                        int randZ = Random.Range(0, 2);
-                        float randomZ = Random.Range(-surfaceExtents.x, surfaceExtents.x);
-                        float sideZ = randZ == 0 ? -surfaceExtents.z : surfaceExtents.z;
+                        rand = Random.Range(0, 2);
+                        randAxis = Random.Range(-surfaceExtents.x, surfaceExtents.x);
+                        side = rand == 0 ? -surfaceExtents.z : surfaceExtents.z;
+                        typeOffsetZ = rand == 0 ? -typeExtents.z : typeExtents.z;
 
-                        position = new Vector3(randomZ, parentSurface.transform.position.y, sideZ);
+                        position = new Vector3(randAxis * surfacePercentage, parent.transform.position.y + sidewaysHeightOffset, side + typeOffsetZ);
 
-                        GameObject.Instantiate(types[i], position, Quaternion.identity);
+                        generatedElements.Add(GameObject.Instantiate(types[i], position, Quaternion.identity));
                     }
 
                     for (int j = 0; j < (amount - halfAmount); j++)
                     {
-                        int randX = Random.Range(0, 2);
-                        float randomX = Random.Range(-surfaceExtents.z, surfaceExtents.z);
-                        float sideX = randX == 0 ? -surfaceExtents.x : surfaceExtents.x;
+                        rand = Random.Range(0, 2);
+                        randAxis = Random.Range(-surfaceExtents.z, surfaceExtents.z);
+                        side = rand == 0 ? -surfaceExtents.x : surfaceExtents.x;
+                        typeOffsetX = rand == 0 ? -typeExtents.x : typeExtents.x;
 
-                        position = new Vector3(sideX, parentSurface.transform.position.y, randomX);
+                        position = new Vector3(side + typeOffsetX, parent.transform.position.y + sidewaysHeightOffset, randAxis * surfacePercentage);
 
-                        GameObject.Instantiate(types[i], position, Quaternion.identity);
+                        generatedElements.Add(GameObject.Instantiate(types[i], position, Quaternion.identity));
                     }
                 }
+            }
+
+            // IMPLEMENT SCRIPTABLE OBJECT FEATURES FOR EXTRA FEATURES (ex. Naming).
+            for (int i = 0; i < generatedElements.Count; i++)
+            {
+                Transform parentGameObject = parent.transform;
+                generatedElements[i].transform.parent = parentGameObject;
             }
 
             static int ElementDirection(ElementType type)
@@ -91,16 +113,11 @@ namespace Assets.Scripts
                     return -1;
                 }
 
-                if (type == ElementType.Sideways)
-                {
-
-                }
-
                 return 1;
             }
         }
 
-        public static void AddFurnitureElementsFormally()
+        public static void AddFurnitureElementsFormally(GameObject parent, GameObject[] types)
         {
 
         }
