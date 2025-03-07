@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using static Assets.Scripts.Utilites;
 
 namespace Assets.Scripts
 {
@@ -10,14 +11,6 @@ namespace Assets.Scripts
             Sitting,
             Hanging,
             Sideways
-        }
-
-        public enum SortingType
-        {
-            Horizontal,
-            Vertical,
-            Grid,
-            Alternating
         }
 
         public static int GenerateSeed(int maxDigits)
@@ -33,7 +26,7 @@ namespace Assets.Scripts
             return random.Next(seedOperation);
         }
 
-        public static void AddFurnitureElementsRandomly(GameObject parent, GameObject[] types, ElementType elementType, float surfacePercentage, int maxItemSpawns, float sidewaysHeightOffset = 0f)
+        public static void AddFurnitureElements(GameObject parent, GameObject[] types, ElementType elementType, Sorting.SortType sortingType, Vector3 offset, float surfacePercentage, int amount, float sidewaysHeightOffset = 0f)
         {
             Collider surfaceCollider = parent.GetComponent<Collider>();
             Vector3 surfaceExtents = surfaceCollider.bounds.extents;
@@ -43,28 +36,26 @@ namespace Assets.Scripts
 
             for (int i = 0; i < types.Length; i++)
             {
-                int amount = Random.Range(0, maxItemSpawns);
-                Vector2 randomPos;
                 Vector3 position;
-
                 Vector3 typeExtents = types[i].GetComponent<Collider>().bounds.extents;
+
+                float typeOffsetY = typeExtents.y;
 
                 if (elementType == ElementType.Sitting || elementType == ElementType.Hanging)
                 {
-                    float restrictionX = surfaceExtents.x * surfacePercentage;
-                    float restrictionZ = surfaceExtents.z * surfacePercentage;
-                    float typeOffsetY = types[i].GetComponent<Collider>().bounds.extents.y;
+                    Vector2 restrictions = new Vector2(surfaceExtents.x, surfaceExtents.z) * surfacePercentage;
 
                     for (int j = 0; j < amount; j++)
                     {
-                        randomPos = new Vector2(Random.Range(-restrictionX, restrictionX), Random.Range(-restrictionZ, restrictionZ));
-                        position = new Vector3(randomPos.x, parent.transform.position.y + ((surfaceExtents.y + typeOffsetY) * ElementDirection(elementType)), randomPos.y);
-
-                        generatedElements.Add(GameObject.Instantiate(types[i], position, Quaternion.identity));
+                        GameObject element = GameObject.Instantiate(types[i], null);
+                        position = Sorting.SortingHelper(sortingType, element, restrictions, amount, j);
+                        element.transform.position = new Vector3(position.x + parent.transform.position.x, parent.transform.position.y + (surfaceExtents.y + typeOffsetY) * ElementDirection(elementType), position.y + parent.transform.position.z) + offset;
+                        generatedElements.Add(element);
                     }
                 }
 
-                else if (elementType == ElementType.Sideways)
+
+                /*if (elementType == ElementType.Sideways)
                 {
                     int halfAmount = amount / 2;
                     int rand;
@@ -96,7 +87,7 @@ namespace Assets.Scripts
 
                         generatedElements.Add(GameObject.Instantiate(types[i], position, Quaternion.identity));
                     }
-                }
+                }*/
             }
 
             // IMPLEMENT SCRIPTABLE OBJECT FEATURES FOR EXTRA FEATURES (ex. Naming).
