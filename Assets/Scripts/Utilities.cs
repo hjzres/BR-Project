@@ -12,15 +12,19 @@ namespace Assets.Scripts
                 Random,
                 Horizontal,
                 Vertical,
-                Diagonal,
                 Grid,
                 Noise
             }
 
-            public static Vector2 SortingHelper(SortType type, GameObject objectToSort, Vector2 restriction, int amount, int iteration = 0)
+            public static Vector2 PositionSortingHelper(SortType type, Vector2 restriction, int amount, int iteration = -1)
             {
                 Vector2 position = new Vector2();
-                Vector3 objExtents = objectToSort.GetComponent<Collider>().bounds.extents;
+
+                if (iteration == -1 && (type == SortType.Horizontal || type == SortType.Vertical))
+                {
+                    Debug.LogError("Since there is no iteration value inputed, function cannot accept Horizontal/Vertical sorting!");
+                    return new Vector2();
+                }
 
                 if (type == SortType.Random)
                 {
@@ -29,8 +33,8 @@ namespace Assets.Scripts
 
                 else if (type == SortType.Horizontal || type == SortType.Vertical)
                 {
-                    int horizontalMultiplier = (type == SortType.Diagonal || type == SortType.Horizontal) ? 1 : 0; 
-                    int verticalMultiplier = (type == SortType.Diagonal || type == SortType.Vertical) ? 1 : 0;
+                    int horizontalMultiplier = type == SortType.Horizontal ? 1 : 0; 
+                    int verticalMultiplier = type == SortType.Vertical ? 1 : 0;
                         
                     float domain = ObtainRestrictionValue(restriction) * 2f;
                     float spacing = domain / amount;

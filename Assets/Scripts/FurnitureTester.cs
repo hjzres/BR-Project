@@ -1,6 +1,6 @@
 using UnityEngine;
 using NaughtyAttributes;
-using static Assets.Scripts.FurnitureRandomizer;
+using static Assets.Scripts.FurnitureHelper;
 using static Assets.Scripts.Utilites;
 
 namespace Assets.Scripts
@@ -9,14 +9,14 @@ namespace Assets.Scripts
     {
         [Header("Table Properties")]
         public float surfacePercentage = 100f;
-        public float heightOffset = 0f;
         public Vector3 offset;
-        [Min(1)] public int length;
+        [Min(1)] public int amount;
         public GameObject table;
         public GameObject appliance1;
         public GameObject appliance2;
         public ElementType elementType;
         public Sorting.SortType sortingType;
+        public Side side;
 
         [Button]
         public void Test()
@@ -26,7 +26,7 @@ namespace Assets.Scripts
                 appliance1
             };
 
-            AddFurnitureElements(table, appliances, elementType, sortingType, offset, surfacePercentage, length);
+            AddFurnitureElements(table, appliances, elementType, sortingType, offset, surfacePercentage, amount, side);
         }
     }
 }
