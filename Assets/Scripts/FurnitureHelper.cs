@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 using static Assets.Scripts.Utilites;
-using System.Threading;
 
 namespace Assets.Scripts
 {
@@ -20,19 +19,6 @@ namespace Assets.Scripts
             RightX,
             TopZ,
             BottomZ
-        }
-
-        public static int GenerateSeed(int maxDigits)
-        {
-            System.Random random = new System.Random();
-            int seedOperation = 10 ^ maxDigits;
-
-            if (seedOperation > int.MaxValue)
-            {
-                return random.Next(Mathf.RoundToInt(int.MaxValue / 1000));
-            }
-
-            return random.Next(seedOperation);
         }
 
         public static void AddFurnitureElements(GameObject parent, GameObject[] types, ElementType elementType, Sorting.SortType sortingType, Vector3 offset, float surfacePercentage, int amount, Side side = 0)

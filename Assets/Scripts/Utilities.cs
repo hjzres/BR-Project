@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem.Interactions;
 
 namespace Assets.Scripts
 {
@@ -12,15 +11,14 @@ namespace Assets.Scripts
                 Random,
                 Horizontal,
                 Vertical,
-                Grid,
-                Noise
+                Grid
             }
 
             public static Vector2 PositionSortingHelper(SortType type, Vector2 restriction, int amount, int iteration = -1)
             {
                 Vector2 position = new Vector2();
 
-                if (iteration == -1 && (type == SortType.Horizontal || type == SortType.Vertical))
+                if (iteration == -1 && (type == SortType.Horizontal || type == SortType.Vertical || type == SortType.Grid))
                 {
                     Debug.LogError("Since there is no iteration value inputed, function cannot accept Horizontal/Vertical sorting!");
                     return new Vector2();
@@ -41,16 +39,16 @@ namespace Assets.Scripts
                     float pos = (iteration - (amount - 1) / 2f) * spacing;
 
                     position = new Vector2(pos * horizontalMultiplier, pos * verticalMultiplier);
-                }
 
-                else if (type == SortType.Grid)
-                {
-
-                }
-
-                else if (type == SortType.Noise)
-                {
-
+                    if (type == SortType.Grid)
+                    {
+                        // TODO: Finish ts if necessary I wanna move on.
+                        if (amount % 2 != 0)
+                        {
+                            Debug.LogError("To use the grid sorting method, amount must be divisble by two!");
+                            return new Vector2();
+                        }
+                    }
                 }
 
                 return position;
@@ -75,6 +73,85 @@ namespace Assets.Scripts
             }
         }
 
+        public struct Noise
+        {
+            [Min(1)] public int octaves;
+
+            [Min(0.1f)] public float noiseScale;
+
+            [Min(0)] public float frequency;
+
+            [Min(0)] public float amplitude;
+
+            [Range(0, 5)] public float persistance;
+
+            [Range(0, 5)] public float lacunarity;
+
+            [Range(0, 10)] public float heightMultiplier;
+
+            public Noise(int octaves, float noiseScale, float frequency, float amplitude, float persistance, float lacunarity, float heightMultiplier)
+            {
+                if (octaves < 0) { octaves = 0; }
+                if (noiseScale <= 0f) { noiseScale = 0.1f; }
+                if (frequency < 0f) { frequency = 0f; }
+                if (amplitude < 0f) { amplitude = 0f; }
+                if (persistance < 0f || persistance > 2f) { persistance = 1f; }
+                if (lacunarity < 0f || lacunarity > 2f) { lacunarity = 1f; }
+                if (heightMultiplier <= 0f) { heightMultiplier = 1f; }
+
+                this.octaves = octaves;
+                this.noiseScale = noiseScale;
+                this.frequency = frequency;
+                this.amplitude = amplitude;
+                this.persistance = persistance;
+                this.lacunarity = lacunarity;
+                this.heightMultiplier = heightMultiplier;
+            }
+
+            public float[,] PerlinNoise(int width, int length, int seed = 0)
+            {
+                float[,] noiseMap = new float[width, length];
+                System.Random prng = GenerateSeed(seed);
+                Vector2[] octaveOffsets = new Vector2[octaves];
+                
+                for (int i = 0; i < octaves; i++)
+                {
+                    float xOffset = prng.Next(-1000000, 1000000);
+                    float yOffset = prng.Next(-1000000, 1000000);
+
+                    octaveOffsets[i] = new Vector2(xOffset, yOffset);
+                }
+
+                for (int x = 0; x < width; x++)
+                {
+                    for (int y = 0; y < length; y++)
+                    {
+                        float frequency = this.frequency;
+                        float amplitude = this.amplitude;
+                        float height = 0;
+
+                        for (int i = 0; i < octaves; i++)
+                        {
+                            float sampleX = (float)x / width * noiseScale * frequency + octaveOffsets[i].x;
+                            float sampleY = (float)y / length * noiseScale * frequency + octaveOffsets[i].y;
+                            float perlinValue = Mathf.PerlinNoise(sampleX, sampleY) * amplitude;
+
+                            amplitude *= persistance;
+                            frequency *= lacunarity;
+
+                            height += perlinValue;
+                        }
+
+                        noiseMap[x, y] = height * heightMultiplier;
+                    }
+                }
+
+                return noiseMap;
+            }
+
+            // TODO : Voronoi noise, Simplex noise, Brownian noise, Fractal noise
+        }
+
         public static Transform[] RetrieveTransformsByTag(string tag)
         {
             GameObject[] gameObjects = GameObject.FindGameObjectsWithTag(tag);
@@ -96,6 +173,11 @@ namespace Assets.Scripts
             }
 
             return transforms;
+        }
+
+        public static System.Random GenerateSeed(int seed)
+        {
+            return new System.Random(seed);
         }
     }
 }
