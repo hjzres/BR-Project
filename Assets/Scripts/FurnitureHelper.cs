@@ -13,7 +13,7 @@ namespace Assets.Scripts
             Sideways
         }
 
-        public enum Side
+        public enum WallSide
         {
             LeftX,
             RightX,
@@ -21,7 +21,7 @@ namespace Assets.Scripts
             BottomZ
         }
 
-        public static void AddFurnitureElements(GameObject parent, GameObject[] types, ElementType elementType, Sorting.SortType sortingType, Vector3 offset, float surfacePercentage, int amount, Side side = 0)
+        public static void AddFurnitureElements(GameObject parent, GameObject[] elements, int amount, float surfacePercentage, Vector3 elementOffset, ElementType elementType, Sorting.SortType sortingType, WallSide side = 0)
         {
             Collider surfaceCollider = parent.GetComponent<Collider>();
             Vector3 surfaceExtents = surfaceCollider.bounds.extents;
@@ -29,11 +29,11 @@ namespace Assets.Scripts
 
             List<GameObject> generatedElements = new List<GameObject>();
 
-            for (int i = 0; i < types.Length; i++)
+            for (int i = 0; i < elements.Length; i++)
             {
                 Vector3 position;
                 Vector2 restrictions;
-                Vector3 typeExtents = types[i].GetComponent<Collider>().bounds.extents;
+                Vector3 typeExtents = elements[i].GetComponent<Collider>().bounds.extents;
 
                 float typeOffsetY = typeExtents.y;
 
@@ -44,9 +44,9 @@ namespace Assets.Scripts
 
                     for (int j = 0; j < amount; j++)
                     {
-                        GameObject element = GameObject.Instantiate(types[i], null);
+                        GameObject element = GameObject.Instantiate(elements[i], null);
                         position = Sorting.PositionSortingHelper(sortingType, restrictions, amount, j);
-                        element.transform.position = new Vector3(position.x, (surfaceExtents.y + typeOffsetY) * elementDirection, position.y) + parent.transform.position + offset;
+                        element.transform.position = new Vector3(position.x, (surfaceExtents.y + typeOffsetY) * elementDirection, position.y) + parent.transform.position + elementOffset;
                         generatedElements.Add(element);
                     }
                 }
@@ -55,9 +55,9 @@ namespace Assets.Scripts
                 {
                     int sideOffsetMultiplier;
 
-                    if (side == Side.LeftX || side == Side.RightX)
+                    if (side == WallSide.LeftX || side == WallSide.RightX)
                     {
-                        bool leftSide = side == Side.LeftX;
+                        bool leftSide = side == WallSide.LeftX;
                         sideOffsetMultiplier = leftSide ? -1 : 1;
 
                         float offsetX = (surfaceExtents.x + typeExtents.x) * sideOffsetMultiplier;
@@ -66,16 +66,16 @@ namespace Assets.Scripts
 
                         for (int j = 0; j < amount; j++)
                         {
-                            GameObject element = GameObject.Instantiate(types[i], null);
+                            GameObject element = GameObject.Instantiate(elements[i], null);
                             position = Sorting.PositionSortingHelper(sortingType, restrictions, amount, j);
-                            element.transform.position = new Vector3(offsetX, position.y, position.x * sideOffsetMultiplier) + parent.transform.position + offset;
+                            element.transform.position = new Vector3(offsetX, position.y, position.x * sideOffsetMultiplier) + parent.transform.position + elementOffset;
                             generatedElements.Add(element); 
                         }
                     }
 
-                    else if (side == Side.TopZ || side == Side.BottomZ)
+                    else if (side == WallSide.TopZ || side == WallSide.BottomZ)
                     {
-                        bool bottomSide = side == Side.BottomZ;
+                        bool bottomSide = side == WallSide.BottomZ;
                         sideOffsetMultiplier = bottomSide ? -1 : 1;
 
                         float offsetZ = (surfaceExtents.z + typeExtents.z) * sideOffsetMultiplier;
@@ -84,9 +84,9 @@ namespace Assets.Scripts
 
                         for (int j = 0; j < amount; j++)
                         {
-                            GameObject element = GameObject.Instantiate(types[i], null);
+                            GameObject element = GameObject.Instantiate(elements[i], null);
                             position = Sorting.PositionSortingHelper(sortingType, restrictions, amount, j);
-                            element.transform.position = new Vector3(position.x * sideOffsetMultiplier, position.y, offsetZ) + parent.transform.position + offset;
+                            element.transform.position = new Vector3(position.x * sideOffsetMultiplier, position.y, offsetZ) + parent.transform.position + elementOffset;
                             generatedElements.Add(element);
                         }
                     }
