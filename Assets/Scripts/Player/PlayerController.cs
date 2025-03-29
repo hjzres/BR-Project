@@ -13,15 +13,23 @@ namespace Assets.Scripts.Player
         [Header("Movement Properties")]
         public RaycastHit groundHit;
         public float spherecastRadius = 1f;
+        public float moveSpeed;
+        public Vector3 moveDirection;
 
         [Header("Components")]
-        public Rigidbody rigidBody;
+        public Rigidbody rb;
         public Collider bodyCollider;
         public Camera cam;
+        
+        public InputActionReference move;
+        
+        
+        
+        
 
         private void Awake()
         {
-            rigidBody = GetComponent<Rigidbody>();
+            rb = GetComponent<Rigidbody>();
             bodyCollider = GetComponentInChildren<Collider>();
             cam = GetComponentInChildren<Camera>();
         }
@@ -39,7 +47,9 @@ namespace Assets.Scripts.Player
 
         private void Movement()
         {
-
+           moveDirection = transform.forward * move.action.ReadValue<Vector2>().y + transform.right * move.action.ReadValue<Vector2>().x;
+           
+           rb.AddForce(moveDirection.normalized * moveSpeed);
         }
 
         // Currently NOT WORKING, idk what's wrong
@@ -49,6 +59,11 @@ namespace Assets.Scripts.Player
             Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - halfScaleY, transform.position.z);
 
             return Physics.SphereCast(spherePosition, spherecastRadius, Vector3.down, out groundHit, 1f);
+        }
+        
+        private void FixedUpdate()
+        {
+            Movement();
         }
     }
 }
