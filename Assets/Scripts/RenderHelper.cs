@@ -6,7 +6,29 @@ namespace Assets.Scripts
 {
     public class RenderHelper
     {
-        public struct PlaneChunk
+        public struct Chunk
+        {
+            public GameObject gameObject;
+            public Transform transform;
+            public List<GameObject> elements;
+
+            public Chunk(Vector2 position, int chunkLength)
+            {
+                gameObject = GameObject.CreatePrimitive(PrimitiveType.Plane);
+                gameObject.GetComponent<MeshCollider>().enabled = false;
+                gameObject.AddComponent<BoxCollider>();
+
+                transform = gameObject.transform;
+                elements = new List<GameObject>();
+
+                transform.localScale = new Vector3(chunkLength, 1f, chunkLength);
+                transform.position = new Vector3(position.x, 0, position.y);
+            }
+
+            
+        }
+
+        /*public struct PlaneChunk
         {
             public List<GameObject> chunkGameObjects;
 
@@ -55,6 +77,6 @@ namespace Assets.Scripts
                     parent.GetChild(i).gameObject.SetActive(visibility);
                 }
             }
-        }    
+        }*/
     }
 }

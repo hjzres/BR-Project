@@ -1,41 +1,29 @@
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using static Assets.Scripts.RenderHelper;
 
 namespace Assets.Scripts
 {
     public class GameManager : MonoBehaviour
     {
-        public Transform[] tPlayer;
-
-        public Vector3[] playerPosition;
+        public List<Chunk> chunks = new List<Chunk>();
+        public bool updateChunks = true;
 
         private void Awake()
         {
-            tPlayer = Utilites.RetrieveTransformsByTag("Player");
-            playerPosition = new Vector3[tPlayer.Length];
+            chunks = new List<Chunk>();
+            //StartCoroutine(UpdateChunks());
         }
 
-        private void Update()
+        private IEnumerator UpdateChunks()
         {
-            if (tPlayer.Length <= 0 || tPlayer == null)
+            while (updateChunks)
             {
-                Debug.Log("Player transform array is empty or null!");
-                return;
-            }   
 
-            for (int i = 0; i < tPlayer.Length; i++)
-            {
-                playerPosition[i] = tPlayer[i].position;
+
+                yield return new WaitForSeconds(1f);
             }
-        }
-
-        private void RetrieveSaveData()
-        {
-
-        }
-
-        private void ApplySaveData()
-        {
-
         }
     }
 }
