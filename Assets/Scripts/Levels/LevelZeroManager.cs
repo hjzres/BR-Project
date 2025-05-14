@@ -10,6 +10,12 @@ namespace Assets.Scripts.Levels
         public GameManager gameManager;
         public int chunkLength;
 
+        [Header("Maze Properties")]
+        [Min(1)] public float minWallWidth;
+        [Min(1)] public float maxWallWidth;
+        [Min(1)] public float wallHeight;
+        [Min(0.1f)] public float wallThickness;
+
         private void Awake()
         {
             gameManager = GetComponent<GameManager>();
@@ -20,7 +26,7 @@ namespace Assets.Scripts.Levels
         public void GenerateSpawnArea()
         {
             // In the future, check if its already been generated via save file.
-            int startAmount = 3;
+            int startAmount = 1;
             float offsetPosition = chunkLength * 10;
             GameObject parent = new GameObject("Spawn Chunks Parent");
 
@@ -43,33 +49,35 @@ namespace Assets.Scripts.Levels
 
         private void SelectGenerationType(Chunk chunk)
         {
-            GenerateMazeWalls(chunk, chunk.gameObject.GetComponent<BoxCollider>().bounds.extents);
+            Vector3 chunkExtents = chunk.gameObject.GetComponent<BoxCollider>().bounds.extents;
+            GenerateMazeWalls(chunk, chunkExtents);
         }
 
         private void GenerateMazeWalls(Chunk chunk, Vector3 chunkExtents)
         {
             // Per Chunk
-            int wallChainAmount = Random.Range(1, 4);
+            int wallChainAmount = Random.Range(13, 18);
 
             for (int i = 0; i <= wallChainAmount; i++)
             {
                 float posX = (float)Random.Range(-chunkExtents.x, chunkExtents.x); 
                 float posZ = (float)Random.Range(-chunkExtents.z, chunkExtents.z);
                 Vector3 chunkOffset = chunk.transform.position;
+                List<GameObject> walls = new List<GameObject>();
 
                 GameObject chainWall = NewWall();
-                chainWall.transform.localScale = new Vector3(Random.Range(1f, 5f), 5f, 1f);
-                chainWall.transform.parent = chunk.transform;
-                chainWall.transform.position = new Vector3(posX, 0, posZ) * chunkLength + chunkOffset;
+                chainWall.transform.localScale = new Vector3(Random.Range(minWallWidth, maxWallWidth), 5f, wallThickness);
+                chainWall.transform.position = new Vector3(posX, chainWall.transform.position.y, posZ) * chunkLength + chunkOffset;
+                walls.Add(chainWall);
 
-                int attempts = Random.Range(1, 4);
+                int attempts = 5;
                 Transform pw = chainWall.transform;
 
                 do 
                 {
                     // nw = New Wall, pw = Previous Wall
                     GameObject nw = NewWall();
-                    nw.transform.parent = chainWall.transform.parent;
+                    walls.Add(nw);
                     nw.transform.position = NextWallPosition(nw.transform, pw);
                     pw = nw.transform;
 
@@ -77,20 +85,31 @@ namespace Assets.Scripts.Levels
                 }
 
                 while (attempts >= 0);
+
+                // Change parents AFTER positions are set to prevent stupid problems
+                foreach (GameObject wall in walls)
+                {
+                    wall.transform.parent = chunk.transform;
+                }
             }
         }
 
         private Vector3 NextWallPosition(Transform nextWall, Transform previousWall)
         {
             // 0 = forward, 1 = left, 2 = right
-            int direction = Random.Range(1, 10) < 5 ? 0 : (Random.Range(1, 10) > 5 ? 1 : 2);
-            Vector3 scale = direction == 0 || previousWall.localScale.z != 0.25f ? new Vector3(Random.Range(1f, 5f), 5f, 0.25f) : new Vector3(0.25f, 5f, Random.Range(1f, 5f));
+            int direction = Random.Range(1, 10) < 3 ? 0 : (Random.Range(1, 10) > 5 ? 1 : 2);
+            Vector3 scale = direction == 0 ? new Vector3(Random.Range(minWallWidth, maxWallWidth), 5f, wallThickness) : new Vector3(wallThickness, 5f, Random.Range(minWallWidth, maxWallWidth));
             nextWall.transform.localScale = scale;
 
-            float offsetX = (previousWall.localScale.x + nextWall.localScale.x) * 2f;
-            float offsetZ = direction == 1 ? (nextWall.localScale.z * 2f) - (nextWall.localScale.x * 2f) : (direction == 2 ? -(nextWall.localScale.z * 2f) + (nextWall.localScale.x * 2f) : 0);
+            float offsetX = direction == 1 || direction == 2 ? (previousWall.localScale.x / 2f) - (nextWall.localScale.x / 2f) : (previousWall.localScale.x / 2f) + (nextWall.localScale.x / 2f);
+            float offsetZ = direction == 0 ? 0 : (direction == 1 ? (previousWall.localScale.z / 2f) + (nextWall.localScale.z / 2f) : -(nextWall.localScale.z / 2f) - (previousWall.localScale.z / 2f));
 
             return new Vector3(previousWall.position.x + offsetX, previousWall.position.y, previousWall.position.z + offsetZ);
+        }
+
+        private void CleanUpIntersectingWalls(List<GameObject> a)
+        {
+
         }
 
         private void GenerateGridWalls(Chunk chunk)

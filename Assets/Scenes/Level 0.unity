@@ -430,6 +430,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameManager: {fileID: 743825120}
   chunkLength: 4
+  minWallWidth: 3
+  maxWallWidth: 5
+  wallThickness: 0.5
 --- !u!114 &743825120
 MonoBehaviour:
   m_ObjectHideFlags: 0
