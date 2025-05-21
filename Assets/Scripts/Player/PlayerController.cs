@@ -1,4 +1,5 @@
 using System;
+using NaughtyAttributes;
 using NUnit.Framework;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -53,14 +54,7 @@ namespace Assets.Scripts.Player
 
             grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 2f, whatIsGround);
 
-            if(grounded)
-            {
-                rb.linearDamping = 5f;
-            }
-            else
-            {
-                rb.linearDamping = 0f;
-            }
+            rb.linearDamping = grounded ? 5f : 0f;
         }
 
         private void Movement()
@@ -69,8 +63,6 @@ namespace Assets.Scripts.Player
            
            rb.AddForce(moveDirection.normalized * moveSpeed);
         }
-
-        // Currently NOT WORKING, idk what's wrong
         
         private void FixedUpdate()
         {
