@@ -338,9 +338,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spherecastRadius: 1
-  rigidBody: {fileID: 0}
+  moveSpeed: 0
+  moveDirection: {x: 0, y: 0, z: 0}
+  grounded: 0
+  whatIsGround:
+    serializedVersion: 2
+    m_Bits: 8
+  playerHeight: 0
+  rb: {fileID: 0}
   bodyCollider: {fileID: 0}
   cam: {fileID: 0}
+  move: {fileID: 5428565686576341891, guid: fb5317af51cdbae419684d71590e8620, type: 3}
 --- !u!114 &966010720
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -504,7 +512,7 @@ GameObject:
   - component: {fileID: 1124162165}
   - component: {fileID: 1124162164}
   - component: {fileID: 1124162163}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
