@@ -1,3 +1,5 @@
+using System;
+using NUnit.Framework;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -11,10 +13,15 @@ namespace Assets.Scripts.Player
         private Vector2 currentMouseDeltaVelocity;
 
         [Header("Movement Properties")]
-        public RaycastHit groundHit;
         public float spherecastRadius = 1f;
         public float moveSpeed;
         public Vector3 moveDirection;
+        
+        [Header("Ground Check")]
+        [SerializeField] bool grounded;
+        public LayerMask whatIsGround;
+        [SerializeField] private float playerHeight;
+        
 
         [Header("Components")]
         public Rigidbody rb;
@@ -43,6 +50,17 @@ namespace Assets.Scripts.Player
             cameraCap = Mathf.Clamp(cameraCap, -90.0f, 90.0f);
             cam.transform.localEulerAngles = Vector3.right * cameraCap;
             transform.Rotate(Vector3.up * currentMouseDelta.x * StaticData.mouseSensitivity);
+
+            grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 2f, whatIsGround);
+
+            if(grounded)
+            {
+                rb.linearDamping = 5f;
+            }
+            else
+            {
+                rb.linearDamping = 0f;
+            }
         }
 
         private void Movement()
@@ -53,13 +71,6 @@ namespace Assets.Scripts.Player
         }
 
         // Currently NOT WORKING, idk what's wrong
-        public bool IsGrounded()
-        {
-            float halfScaleY = transform.localScale.y / 2f;
-            Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - halfScaleY, transform.position.z);
-
-            return Physics.SphereCast(spherePosition, spherecastRadius, Vector3.down, out groundHit, 1f);
-        }
         
         private void FixedUpdate()
         {
