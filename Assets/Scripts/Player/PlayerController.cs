@@ -4,17 +4,17 @@ using NUnit.Framework;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Unity.Netcode;
 
 namespace Assets.Scripts.Player
 {
-    public class PlayerController : MonoBehaviour
+    public class PlayerController : NetworkBehaviour
     {
         private float cameraCap;
         private Vector2 currentMouseDelta;
         private Vector2 currentMouseDeltaVelocity;
 
         [Header("Movement Properties")]
-        public float spherecastRadius = 1f;
         public float moveSpeed;
         public Vector3 moveDirection;
         
@@ -30,9 +30,16 @@ namespace Assets.Scripts.Player
         public Camera cam;
         
         public InputActionReference move;
-        
-        
-        
+
+
+        public override void OnNetworkSpawn()
+        {
+            if (!IsOwner)
+            {
+                enabled = false;
+                return;
+            }
+        }
         
 
         private void Awake()
@@ -40,6 +47,8 @@ namespace Assets.Scripts.Player
             rb = GetComponent<Rigidbody>();
             bodyCollider = GetComponentInChildren<Collider>();
             cam = GetComponentInChildren<Camera>();
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
 
         private void Update()

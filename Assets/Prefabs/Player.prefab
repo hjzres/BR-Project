@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 8995544843797746074}
   - component: {fileID: 6076343713791818968}
+  - component: {fileID: 2908895276916563172}
   - component: {fileID: 4134681386620679655}
   - component: {fileID: 4934096750890369393}
-  - component: {fileID: 2908895276916563172}
   - component: {fileID: -621112591157871560}
   m_Layer: 0
   m_Name: Player
@@ -65,6 +65,31 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0
+--- !u!114 &2908895276916563172
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4719004516772863940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 2759671228
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!114 &4134681386620679655
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -77,7 +102,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e42a048c5e4e69e4387d41eb2529cc72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spherecastRadius: 1
+  ShowTopMostFoldoutHeaderGroup: 1
   moveSpeed: 50
   moveDirection: {x: 0, y: 0, z: 0}
   grounded: 0
@@ -119,31 +144,6 @@ MonoBehaviour:
   m_DefaultActionMap: GamePlay
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &2908895276916563172
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4719004516772863940}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2759671228
-  InScenePlacedSourceGlobalObjectIdHash: 0
-  DeferredDespawnTick: 0
-  Ownership: 1
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
-  SyncOwnerTransformWhenParented: 1
-  AllowOwnerToParent: 0
 --- !u!114 &-621112591157871560
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -202,6 +202,7 @@ GameObject:
   - component: {fileID: 1847342178295096364}
   - component: {fileID: 6246658808018178258}
   - component: {fileID: 8448825271681534482}
+  - component: {fileID: 8930174493536191188}
   m_Layer: 0
   m_Name: Camera
   m_TagString: MainCamera
@@ -327,6 +328,19 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!114 &8930174493536191188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5841646287641550177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5d0b3a990083bf4da49a513643958d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!1 &8061104616512902433
 GameObject:
   m_ObjectHideFlags: 0
