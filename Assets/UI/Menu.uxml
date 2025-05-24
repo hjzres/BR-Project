@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Styles/Menu.uss?fileID=7433441132597879392&amp;guid=3763427c4a945904ba09c52319f5e4f6&amp;type=3#Menu" />
+    <ui:VisualElement style="flex-grow: 1; background-color: rgb(60, 43, 43);">
+        <ui:VisualElement name="Container" style="flex-grow: 1; width: 40%; align-items: stretch; justify-content: space-between; height: 60%; flex-direction: column; align-self: stretch; top: 40%; max-height: 60%; bottom: auto; background-color: rgba(60, 43, 43, 0);">
+            <ui:Button text="SinglePlayer" name="SinglePlayer" class="button" style="width: 100%;" />
+            <ui:Button text="Multiplayer" name="Multiplayer" class="button" />
+            <ui:Button text="Options" name="Options" class="button" />
+            <ui:Button text="Quit" name="Quit" class="button" />
+        </ui:VisualElement>
+        <ui:Label text="BackRooms Project&#10;" name="Title" style="-unity-text-align: upper-left; position: absolute; height: 10%; width: 30%; font-size: 40%;" />
+    </ui:VisualElement>
+</ui:UXML>
