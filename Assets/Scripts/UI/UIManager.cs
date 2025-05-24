@@ -6,12 +6,14 @@ namespace Assets.Scripts.UI
     public class UIManager : MonoBehaviour
     {
         [SerializeField] VisualTreeAsset mainMenuAsset;
-        [SerializeField] VisualTreeAsset multiplayerMenuAsset;
+        [SerializeField] VisualTreeAsset hostMenuAsset;
+        [SerializeField] VisualTreeAsset joinMenuAsset;
         [SerializeField] VisualTreeAsset optionsMenuAsset;
 
         private VisualElement root;
         private VisualElement mainMenu;
-        private VisualElement multiplayerMenu;
+        private VisualElement hostMenu;
+        private VisualElement joinMenu;
         private VisualElement optionsMenu;
 
         void OnEnable()
@@ -31,11 +33,21 @@ namespace Assets.Scripts.UI
             optionsButton.clicked += ShowOptionsMenu;
         }
 
-        public void ShowMultiplayerMenu()
+        public void ShowHostMenu()
         {
             root.Clear();
-            multiplayerMenu = multiplayerMenuAsset.CloneTree();
-            root.Add(multiplayerMenu);
+            hostMenu = hostMenuAsset.CloneTree();
+            root.Add(hostMenu);
+
+            Button backButton = optionsMenu.Q<Button>("BackButton");
+            backButton.clicked += ShowMainMenu;
+        }
+
+        public void ShowJoinMenu()
+        {
+            root.Clear();
+            joinMenu = joinMenuAsset.CloneTree();
+            root.Add(joinMenu);
 
             Button backButton = optionsMenu.Q<Button>("BackButton");
             backButton.clicked += ShowMainMenu;
