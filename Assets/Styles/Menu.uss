@@ -14,7 +14,7 @@
     align-content: flex-start;
     align-items: stretch;
     justify-content: flex-start;
-    -unity-text-align: upper-left;
+    -unity-text-align: middle-left;
     max-width: 40%;
 }
 
