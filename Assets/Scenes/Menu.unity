@@ -634,8 +634,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainMenuAsset: {fileID: 9197481963319205126, guid: 711f9167c7ab0554d8fa869e7f7362f6, type: 3}
-  hostMenuAsset: {fileID: 0}
-  joinMenuAsset: {fileID: 0}
+  hostMenuAsset: {fileID: 9197481963319205126, guid: 9edb414c42f3020468786386814347d2, type: 3}
+  joinMenuAsset: {fileID: 9197481963319205126, guid: 85c44195478b65e439bed5d4de7f2b8e, type: 3}
   optionsMenuAsset: {fileID: 9197481963319205126, guid: 615adb27e3536c24fb087f2c3f9ad923, type: 3}
 --- !u!1 &1808313014
 GameObject:
