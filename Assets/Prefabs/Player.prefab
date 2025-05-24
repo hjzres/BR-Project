@@ -114,6 +114,7 @@ MonoBehaviour:
   bodyCollider: {fileID: 0}
   cam: {fileID: 0}
   move: {fileID: 5428565686576341891, guid: fb5317af51cdbae419684d71590e8620, type: 3}
+  jump: {fileID: 7954932502693845419, guid: fb5317af51cdbae419684d71590e8620, type: 3}
 --- !u!114 &4934096750890369393
 MonoBehaviour:
   m_ObjectHideFlags: 0
