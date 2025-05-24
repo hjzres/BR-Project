@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Styles/Menu.uss?fileID=7433441132597879392&amp;guid=3763427c4a945904ba09c52319f5e4f6&amp;type=3#Menu" />
+    <ui:VisualElement style="flex-grow: 1; background-color: rgb(60, 43, 43);">
+        <ui:VisualElement name="ButtonContainer" style="flex-grow: 1; width: 40%; align-items: center; justify-content: space-between; height: 60%; flex-direction: column; align-self: stretch; top: 40%; max-height: 60%; bottom: auto; background-color: rgba(60, 43, 43, 0); -unity-text-align: upper-left; left: 30%;">
+            <ui:Button text="Gameplay" name="GameplayButton" class="button" style="width: 100%; -unity-text-align: middle-center;" />
+            <ui:Button text="Controls" name="ControlsButton" class="button" style="-unity-text-align: middle-center;" />
+            <ui:Button text="Video Settings" name="VideoSettingsButton" class="button" style="-unity-text-align: middle-center;" />
+            <ui:Button text="Audio Settings" name="AudioSettingsButton" class="button" style="-unity-text-align: middle-center;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="TitleContainer" style="flex-grow: 1; position: absolute; flex-direction: row; width: 100%; height: 50px; max-height: 50px; top: 0; left: 0; right: 0;">
+            <ui:Label text="Options" name="OptionsTitle" style="-unity-text-align: upper-center; position: relative; height: 10%; width: 30%; font-size: 40%; top: 0; left: 35%; right: -10px; bottom: -14px;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:Button text="Back" name="BackButton" class="button" style="bottom: 0; right: 0; position: absolute; max-width: 16%; height: 98px; max-height: 12%; -unity-text-align: middle-center; width: 233px;" />
+</ui:UXML>
