@@ -1,7 +1,7 @@
 .button {
     width: 40%;
-    height: 20%;
-    max-height: 40%;
+    height: 15%;
+    max-height: 15%;
     font-size: 200%;
     color: rgb(103, 103, 103);
     background-color: rgba(255, 0, 0, 0);
