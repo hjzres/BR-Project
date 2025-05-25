@@ -27,9 +27,14 @@ namespace Assets.Scripts.UI
         {
             root.Clear();
             mainMenu = mainMenuAsset.CloneTree();
+            mainMenu.style.flexGrow = 1;
             root.Add(mainMenu);
 
-            Button optionsButton = mainMenu.Q<Button>("optionsButton");
+            Button hostButton = mainMenu.Q<Button>("HostButton");
+            hostButton.clicked += ShowHostMenu;
+            Button joinButton = mainMenu.Q<Button>("JoinButton");
+            joinButton.clicked += ShowJoinMenu;
+            Button optionsButton = mainMenu.Q<Button>("OptionsButton");
             optionsButton.clicked += ShowOptionsMenu;
         }
 
@@ -37,9 +42,10 @@ namespace Assets.Scripts.UI
         {
             root.Clear();
             hostMenu = hostMenuAsset.CloneTree();
+            hostMenu.style.flexGrow = 1;
             root.Add(hostMenu);
 
-            Button backButton = optionsMenu.Q<Button>("BackButton");
+            Button backButton = hostMenu.Q<Button>("BackButton");
             backButton.clicked += ShowMainMenu;
         }
 
@@ -47,9 +53,10 @@ namespace Assets.Scripts.UI
         {
             root.Clear();
             joinMenu = joinMenuAsset.CloneTree();
+            joinMenu.style.flexGrow = 1;
             root.Add(joinMenu);
 
-            Button backButton = optionsMenu.Q<Button>("BackButton");
+            Button backButton = joinMenu.Q<Button>("BackButton");
             backButton.clicked += ShowMainMenu;
         }
 
@@ -57,6 +64,7 @@ namespace Assets.Scripts.UI
         {
             root.Clear();
             optionsMenu = optionsMenuAsset.CloneTree();
+            optionsMenu.style.flexGrow = 1;
             root.Add(optionsMenu);
 
             Button backButton = optionsMenu.Q<Button>("BackButton");
