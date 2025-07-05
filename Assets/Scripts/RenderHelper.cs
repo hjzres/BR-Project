@@ -1,11 +1,16 @@
 using UnityEngine;
 using UnityEngine.Rendering;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Assets.Scripts
 {
     public class RenderHelper
     {
+        private Vector2Int currentChunk;
+
+        private Dictionary<Vector2Int, Chunk> chunks = new Dictionary<Vector2Int, Chunk>();
+
         public struct Chunk
         {
             public GameObject gameObject;
@@ -24,59 +29,37 @@ namespace Assets.Scripts
                 transform.localScale = new Vector3(chunkLength, 1f, chunkLength);
                 transform.position = new Vector3(position.x, 0, position.y);
             }
-
-            
         }
 
-        /*public struct PlaneChunk
+        public void UpdateChunks(Transform reference, int chunkLength, int viewDistanceInChunks)
         {
-            public List<GameObject> chunkGameObjects;
+            Debug.Log("Something");
+            Vector2 pos = new Vector2(reference.position.x, reference.position.z);
+            Vector2Int newChunk = new Vector2Int(Mathf.FloorToInt(pos.x / chunkLength), Mathf.FloorToInt(pos.y / chunkLength));
 
-            public Vector2 position;
-
-            public GameObject gameObject;
-
-            public Transform transform;
-
-            private Transform parent;
-
-            public PlaneChunk(Vector2 position, int size)
+            if (newChunk != currentChunk)
             {
-                this.chunkGameObjects = new List<GameObject>();
-                this.position = position;
-                this.gameObject = GameObject.CreatePrimitive(PrimitiveType.Plane);
-                this.parent = new GameObject("Level Chunk").transform;
-                this.gameObject.transform.parent = this.parent;
-                this.transform = gameObject.transform;
-                this.gameObject.transform.position = new Vector3(position.x, 0, position.y);
-                gameObject.transform.localScale = new Vector3(size, 0, size);
-            }
+                currentChunk = newChunk;
 
-            public void AddGeneratedObjectsToChunk(List<GameObject> gameObjects)
-            {
-                for (int i = 0; i < gameObjects.Count; i++)
+                List<Vector2Int> generatedChunks = new List<Vector2Int>(chunks.Keys);
+
+                for (int x = -viewDistanceInChunks; x <= viewDistanceInChunks; x++)
                 {
-                    if (gameObjects[i] == null)
+                    for (int y = -viewDistanceInChunks; y <= viewDistanceInChunks; y++)
                     {
-                        gameObjects.Remove(gameObjects[i]);
-                        Debug.Log("The GameObject " + gameObjects[i] + " is null, now removed from list and destroyed. Script: RenderHelper");
-                        GameObject.Destroy(gameObjects[i]);
+                        Vector2Int chunkCoordinate = new Vector2Int(x, y);
+
+                        if (!chunks.ContainsKey(chunkCoordinate))
+                        {
+                            Vector2 position = new Vector2(chunkCoordinate.x, chunkCoordinate.y) * chunkLength * 10;
+                            Chunk chunk = new Chunk(position, chunkLength);
+                            chunks.Add(chunkCoordinate, chunk);
+                        }
+
+                        generatedChunks.Remove(chunkCoordinate);
                     }
-
-                    gameObjects[i].transform.parent = parent;
-                    chunkGameObjects.Add(gameObjects[i]);
-                    gameObjects.Remove(gameObjects[i]);
                 }
             }
-
-            public void SetVisiblity(bool condition)
-            {
-                bool visibility = condition ? false : true;
-                for (int i = 0; i < parent.childCount; i++)
-                {
-                    parent.GetChild(i).gameObject.SetActive(visibility);
-                }
-            }
-        }*/
+        }
     }
 }

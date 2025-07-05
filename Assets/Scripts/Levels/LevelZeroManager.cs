@@ -8,9 +8,13 @@ namespace Assets.Scripts.Levels
     public class LevelZeroManager : MonoBehaviour
     {
         public GameManager gameManager;
+        
+        [Header("Chunk Properties")]
         public int chunkLength;
-
+        public Transform player;
+        
         [Header("Maze Properties")]
+        public bool generateMaze = true;
         [Min(1)] public float minWallWidth;
         [Min(1)] public float maxWallWidth;
         [Min(1)] public float wallHeight;
@@ -22,22 +26,48 @@ namespace Assets.Scripts.Levels
         [Header("Test Assets")]
         public Material greenMat;
 
+        private RenderHelper renderHelper;
+        private int viewDistance = 3;
+        private Dictionary<Vector2Int, GameObject> loadedChunks = new Dictionary<Vector2Int, GameObject>();
+
+
         private void Awake()
         {
             gameManager = GetComponent<GameManager>();
             chunkPercentage *= 0.01f;
-            GenerateSpawnArea();
+            renderHelper = new RenderHelper();
+            //GenerateSpawnArea();
+        }
+
+        private void Update()
+        {
+            Vector2Int playerChunkCoord = new Vector2Int(Mathf.FloorToInt(player.position.x / chunkLength), Mathf.FloorToInt(player.position.z / chunkLength));
+            HashSet<Vector2Int> neededChunks = new HashSet<Vector2Int>();
+
+            for (int x = -viewDistance; x <= viewDistance; x++)
+            {
+                for (int z = -viewDistance; z <= viewDistance; z++)
+                {
+                    Vector2Int chunkCoord = new Vector2Int(playerChunkCoord.x + x, playerChunkCoord.y + z);
+                    neededChunks.Add(chunkCoord);
+
+                    if (!loadedChunks.ContainsKey(chunkCoord))
+                    {
+                        Vector3 chunkPosition = new Vector3(chunkCoord.x * chunkLength, 0, chunkCoord.y * chunkLength);
+                        GameObject chunk = new GameObject();
+                        loadedChunks.Add(chunkCoord, chunk);
+                    }
+                }
+            }
         }
 
         [Button]
         public void GenerateSpawnArea()
         {
             // In the future, check if its already been generated via save file.
-            int startAmount = 1;
+            int startAmount = 3;
             float offsetPosition = chunkLength * 10;
             GameObject parent = new GameObject("Spawn Chunks Parent");
-
-            gameManager.chunks.Clear();
 
             for (int i = 0; i < startAmount; i++)
             {
@@ -47,7 +77,6 @@ namespace Assets.Scripts.Levels
                     Chunk chunk = new Chunk(position, chunkLength);
                     chunk.transform.parent = parent.transform;
                     SelectGenerationType(chunk);
-                    gameManager.chunks.Add(chunk);
                 }
             }
 
@@ -56,8 +85,11 @@ namespace Assets.Scripts.Levels
 
         private void SelectGenerationType(Chunk chunk)
         {
-            Vector3 chunkExtents = chunk.gameObject.GetComponent<BoxCollider>().bounds.extents;
-            GenerateMazeWalls(chunk, chunkExtents);
+            if (generateMaze)
+            {
+                Vector3 chunkExtents = chunk.gameObject.GetComponent<BoxCollider>().bounds.extents;
+                GenerateMazeWalls(chunk, chunkExtents);
+            }
         }
 
         private void GenerateMazeWalls(Chunk chunk, Vector3 chunkExtents)
@@ -65,6 +97,9 @@ namespace Assets.Scripts.Levels
             // Per Chunk
             int wallChainAmount = Random.Range(chainAmount.x, chainAmount.y);
             List<GameObject> walls = new List<GameObject>();
+
+            // Griding or some idfk figure it out
+            float splitChunkLength = (chunkLength * 10) / wallChainAmount;
 
             for (int i = 0; i <= wallChainAmount; i++)
             {
@@ -86,7 +121,6 @@ namespace Assets.Scripts.Levels
                     GameObject nw = NewWall();
                     walls.Add(nw);
                     nw.transform.position = NextWallPosition(nw.transform, pw);
-
                     pw = nw.transform;
 
                     attempts--;

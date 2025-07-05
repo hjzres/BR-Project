@@ -7,12 +7,11 @@ namespace Assets.Scripts
 {
     public class GameManager : MonoBehaviour
     {
-        public List<Chunk> chunks = new List<Chunk>();
+        public Transform player;
         public bool updateChunks = true;
 
         private void Awake()
         {
-            chunks = new List<Chunk>();
             //StartCoroutine(UpdateChunks());
         }
 
