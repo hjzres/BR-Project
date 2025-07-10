@@ -1,60 +1,114 @@
 using UnityEngine;
 using UnityEngine.Rendering;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Assets.Scripts
 {
     public class RenderHelper
     {
-        public struct PlaneChunk
+        public struct Chunk
         {
-            public List<GameObject> chunkGameObjects;
+            public GameObject meshObject;
 
-            public Vector2 position;
+            public Chunk(Vector2 position, Material material, int size)
+            {
+                meshObject = CreateChunk(position, material, size);
+            }
 
+            public static GameObject CreateChunk(Vector2 position, Material material, int size = 1)
+            {
+                // Specifically set for optimization, two triangles is enough
+                Vector3[] vertices = new Vector3[4];
+                Vector2[] uvs = new Vector2[vertices.Length];
+                int[] triangles = new int[6];
+                float halfSize = size * 0.5f; // Used to center GameObject with position cursor.
+
+                GameObject meshObject = new GameObject("Mesh", typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider));
+                Vector3 meshPosition = meshObject.transform.position;
+                meshObject.transform.position = new Vector3(position.x, 0, position.y);
+
+                vertices[0] = new Vector3(meshPosition.x - halfSize, 0, meshPosition.z + size - halfSize);
+                vertices[1] = new Vector3(meshPosition.x + size - halfSize, 0, meshPosition.z + size - halfSize);
+                vertices[2] = new Vector3(meshPosition.x - halfSize, 0, meshPosition.z - halfSize);
+                vertices[3] = new Vector3(meshPosition.x + size - halfSize, 0, meshPosition.z - halfSize);
+
+                for (int i = 0; i < vertices.Length; i++)
+                {
+                    uvs[i] = new Vector2(vertices[i].x, vertices[i].z);
+                }
+                
+                triangles[0] = 0;
+                triangles[1] = 1;
+                triangles[2] = 2;
+                triangles[3] = 2;
+                triangles[4] = 1;
+                triangles[5] = 3;
+
+                Mesh mesh = new Mesh();
+                mesh.vertices = vertices;
+                mesh.uv = uvs;
+                mesh.triangles = triangles;
+                mesh.RecalculateNormals();
+
+                meshObject.GetComponent<MeshFilter>().mesh = mesh;
+                meshObject.GetComponent<MeshRenderer>().material = material;
+
+                return meshObject;
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /*
+        public struct Chunk
+        {
             public GameObject gameObject;
-
             public Transform transform;
+            public List<GameObject> elements;
 
-            private Transform parent;
-
-            public PlaneChunk(Vector2 position, int size)
+            public Chunk(Vector2 position, int chunkLength)
             {
-                this.chunkGameObjects = new List<GameObject>();
-                this.position = position;
-                this.gameObject = GameObject.CreatePrimitive(PrimitiveType.Plane);
-                this.parent = new GameObject("Level Chunk").transform;
-                this.gameObject.transform.parent = this.parent;
-                this.transform = gameObject.transform;
-                this.gameObject.transform.position = new Vector3(position.x, 0, position.y);
-                gameObject.transform.localScale = new Vector3(size, 0, size);
-            }
+                gameObject = GameObject.CreatePrimitive(PrimitiveType.Plane);
+                gameObject.GetComponent<MeshCollider>().enabled = false;
+                gameObject.AddComponent<BoxCollider>();
 
-            public void AddGeneratedObjectsToChunk(List<GameObject> gameObjects)
-            {
-                for (int i = 0; i < gameObjects.Count; i++)
-                {
-                    if (gameObjects[i] == null)
-                    {
-                        gameObjects.Remove(gameObjects[i]);
-                        Debug.Log("The GameObject " + gameObjects[i] + " is null, now removed from list and destroyed. Script: RenderHelper");
-                        GameObject.Destroy(gameObjects[i]);
-                    }
+                transform = gameObject.transform;
+                elements = new List<GameObject>();
 
-                    gameObjects[i].transform.parent = parent;
-                    chunkGameObjects.Add(gameObjects[i]);
-                    gameObjects.Remove(gameObjects[i]);
-                }
+                transform.localScale = new Vector3(chunkLength, 1f, chunkLength);
+                transform.position = new Vector3(position.x, 0, position.y);
             }
+        }
 
-            public void SetVisiblity(bool condition)
-            {
-                bool visibility = condition ? false : true;
-                for (int i = 0; i < parent.childCount; i++)
-                {
-                    parent.GetChild(i).gameObject.SetActive(visibility);
-                }
-            }
-        }    
+        public void UpdateChunking(Transform reference)
+        {
+            // TODO
+        }
+        */
     }
 }

@@ -179,5 +179,14 @@ namespace Assets.Scripts
         {
             return new System.Random(seed);
         }
+
+        public static Vector3 RandomVector(float rangeMin, float rangeMax, int yValue, int seed)
+        {
+            float x = Random.Range(rangeMin, rangeMax);
+            float y = Random.Range(rangeMin, rangeMax) * yValue;
+            float z = Random.Range(rangeMin, rangeMax);
+
+            return new Vector3(x, y, z);
+        }
     }
 }

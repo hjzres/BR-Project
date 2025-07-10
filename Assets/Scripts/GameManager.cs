@@ -1,41 +1,49 @@
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using NaughtyAttributes;
 
 namespace Assets.Scripts
 {
+    // Handles entity count, multiplayer changes + syncing
     public class GameManager : MonoBehaviour
     {
-        public Transform[] tPlayer;
+        public Transform player;
+        public bool updateChunks = true;
+        public RenderHelper renderHelper;
+        public bool drawGizmos = false;
 
-        public Vector3[] playerPosition;
+        [Header("Chunking")]
+        public int size = 150;
+
+        [Header("Test Materials")]
+        public Material green;
+        public Material red;
+        public Material white;
 
         private void Awake()
         {
-            tPlayer = Utilites.RetrieveTransformsByTag("Player");
-            playerPosition = new Vector3[tPlayer.Length];
+            renderHelper = new RenderHelper();
         }
 
         private void Update()
         {
-            if (tPlayer.Length <= 0 || tPlayer == null)
-            {
-                Debug.Log("Player transform array is empty or null!");
-                return;
-            }   
+            
+        }
 
-            for (int i = 0; i < tPlayer.Length; i++)
+        [Button]
+        public void GenerateMesh()
+        {
+            renderHelper = new RenderHelper();
+            RenderHelper.Chunk chunk = new RenderHelper.Chunk(new Vector2(0, 0), white, size);
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (drawGizmos)
             {
-                playerPosition[i] = tPlayer[i].position;
+
             }
-        }
-
-        private void RetrieveSaveData()
-        {
-
-        }
-
-        private void ApplySaveData()
-        {
-
         }
     }
 }
