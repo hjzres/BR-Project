@@ -9,7 +9,14 @@ namespace Assets.Scripts
     {
         public struct Chunk
         {
-            public static GameObject CreateChunk(Vector2 position, Material material, float size = 1f)
+            public GameObject meshObject;
+
+            public Chunk(Vector2 position, Material material, int size)
+            {
+                meshObject = CreateChunk(position, material, size);
+            }
+
+            public static GameObject CreateChunk(Vector2 position, Material material, int size = 1)
             {
                 // Specifically set for optimization, two triangles is enough
                 Vector3[] vertices = new Vector3[4];
@@ -17,7 +24,7 @@ namespace Assets.Scripts
                 int[] triangles = new int[6];
                 float halfSize = size * 0.5f; // Used to center GameObject with position cursor.
 
-                GameObject meshObject = new GameObject("Mesh", typeof(MeshFilter), typeof(MeshRenderer));
+                GameObject meshObject = new GameObject("Mesh", typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider));
                 Vector3 meshPosition = meshObject.transform.position;
                 meshObject.transform.position = new Vector3(position.x, 0, position.y);
 
@@ -49,11 +56,6 @@ namespace Assets.Scripts
 
                 return meshObject;
             }
-        }
-
-        public void UpdateChunking(Transform reference)
-        {
-            // TODO
         }
 
 

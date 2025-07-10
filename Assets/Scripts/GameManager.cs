@@ -13,16 +13,29 @@ namespace Assets.Scripts
         public RenderHelper renderHelper;
         public bool drawGizmos = false;
 
+        [Header("Chunking")]
+        public int size = 150;
+
         [Header("Test Materials")]
         public Material green;
         public Material red;
         public Material white;
 
+        private void Awake()
+        {
+            renderHelper = new RenderHelper();
+        }
+
+        private void Update()
+        {
+            
+        }
+
         [Button]
         public void GenerateMesh()
         {
             renderHelper = new RenderHelper();
-            GameObject mesh = RenderHelper.Chunk.CreateChunk(new Vector2(0, 0), white, 100f);
+            RenderHelper.Chunk chunk = new RenderHelper.Chunk(new Vector2(0, 0), white, size);
         }
 
         private void OnDrawGizmos()
