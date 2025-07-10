@@ -7,10 +7,82 @@ namespace Assets.Scripts
 {
     public class RenderHelper
     {
-        private Vector2Int currentChunk;
+        public struct Chunk
+        {
+            public static GameObject CreateChunk(Vector2 position, Material material, float size = 1f)
+            {
+                // Specifically set for optimization, two triangles is enough
+                Vector3[] vertices = new Vector3[4];
+                Vector2[] uvs = new Vector2[vertices.Length];
+                int[] triangles = new int[6];
+                float halfSize = size * 0.5f; // Used to center GameObject with position cursor.
 
-        private Dictionary<Vector2Int, Chunk> chunks = new Dictionary<Vector2Int, Chunk>();
+                GameObject meshObject = new GameObject("Mesh", typeof(MeshFilter), typeof(MeshRenderer));
+                Vector3 meshPosition = meshObject.transform.position;
+                meshObject.transform.position = new Vector3(position.x, 0, position.y);
 
+                vertices[0] = new Vector3(meshPosition.x - halfSize, 0, meshPosition.z + size - halfSize);
+                vertices[1] = new Vector3(meshPosition.x + size - halfSize, 0, meshPosition.z + size - halfSize);
+                vertices[2] = new Vector3(meshPosition.x - halfSize, 0, meshPosition.z - halfSize);
+                vertices[3] = new Vector3(meshPosition.x + size - halfSize, 0, meshPosition.z - halfSize);
+
+                for (int i = 0; i < vertices.Length; i++)
+                {
+                    uvs[i] = new Vector2(vertices[i].x, vertices[i].z);
+                }
+                
+                triangles[0] = 0;
+                triangles[1] = 1;
+                triangles[2] = 2;
+                triangles[3] = 2;
+                triangles[4] = 1;
+                triangles[5] = 3;
+
+                Mesh mesh = new Mesh();
+                mesh.vertices = vertices;
+                mesh.uv = uvs;
+                mesh.triangles = triangles;
+                mesh.RecalculateNormals();
+
+                meshObject.GetComponent<MeshFilter>().mesh = mesh;
+                meshObject.GetComponent<MeshRenderer>().material = material;
+
+                return meshObject;
+            }
+        }
+
+        public void UpdateChunking(Transform reference)
+        {
+            // TODO
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /*
         public struct Chunk
         {
             public GameObject gameObject;
@@ -31,35 +103,10 @@ namespace Assets.Scripts
             }
         }
 
-        public void UpdateChunks(Transform reference, int chunkLength, int viewDistanceInChunks)
+        public void UpdateChunking(Transform reference)
         {
-            Debug.Log("Something");
-            Vector2 pos = new Vector2(reference.position.x, reference.position.z);
-            Vector2Int newChunk = new Vector2Int(Mathf.FloorToInt(pos.x / chunkLength), Mathf.FloorToInt(pos.y / chunkLength));
-
-            if (newChunk != currentChunk)
-            {
-                currentChunk = newChunk;
-
-                List<Vector2Int> generatedChunks = new List<Vector2Int>(chunks.Keys);
-
-                for (int x = -viewDistanceInChunks; x <= viewDistanceInChunks; x++)
-                {
-                    for (int y = -viewDistanceInChunks; y <= viewDistanceInChunks; y++)
-                    {
-                        Vector2Int chunkCoordinate = new Vector2Int(x, y);
-
-                        if (!chunks.ContainsKey(chunkCoordinate))
-                        {
-                            Vector2 position = new Vector2(chunkCoordinate.x, chunkCoordinate.y) * chunkLength * 10;
-                            Chunk chunk = new Chunk(position, chunkLength);
-                            chunks.Add(chunkCoordinate, chunk);
-                        }
-
-                        generatedChunks.Remove(chunkCoordinate);
-                    }
-                }
-            }
+            // TODO
         }
+        */
     }
 }

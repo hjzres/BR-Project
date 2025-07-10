@@ -2,12 +2,13 @@ using UnityEngine;
 using NaughtyAttributes;
 using System.Collections.Generic;
 using static Assets.Scripts.RenderHelper;
+using UnityEditor.ShaderGraph.Internal;
 
 namespace Assets.Scripts.Levels
 {
-    public class LevelZeroManager : MonoBehaviour
+    public class LevelZeroManagerOld : MonoBehaviour
     {
-        public GameManager gameManager;
+        /*public GameManager gameManager;
         
         [Header("Chunk Properties")]
         public int chunkLength;
@@ -65,7 +66,7 @@ namespace Assets.Scripts.Levels
         public void GenerateSpawnArea()
         {
             // In the future, check if its already been generated via save file.
-            int startAmount = 3;
+            int startAmount = 1;
             float offsetPosition = chunkLength * 10;
             GameObject parent = new GameObject("Spawn Chunks Parent");
 
@@ -95,11 +96,9 @@ namespace Assets.Scripts.Levels
         private void GenerateMazeWalls(Chunk chunk, Vector3 chunkExtents)
         {
             // Per Chunk
-            int wallChainAmount = Random.Range(chainAmount.x, chainAmount.y);
+            //int wallChainAmount = Random.Range(chainAmount.x, chainAmount.y);
+            int wallChainAmount = 0;
             List<GameObject> walls = new List<GameObject>();
-
-            // Griding or some idfk figure it out
-            float splitChunkLength = (chunkLength * 10) / wallChainAmount;
 
             for (int i = 0; i <= wallChainAmount; i++)
             {
@@ -114,6 +113,8 @@ namespace Assets.Scripts.Levels
 
                 int attempts = 5;
                 Transform pw = chainWall.transform;
+                pw.position = new Vector3(pw.position.x, pw.position.y + (wallHeight * 0.5f), pw.position.z);
+                pw.GetComponent<MeshRenderer>().material = greenMat;
 
                 do
                 {
@@ -129,12 +130,12 @@ namespace Assets.Scripts.Levels
                 while (attempts >= 0);
             }
 
-            CleanUpIntersectingWalls(walls, chunk);
+            //CleanUpIntersectingWalls(walls, chunk);
             
             // Change parents AFTER positions are set to prevent stupid position problems
             foreach (GameObject wall in walls)
             {
-                wall.transform.position = new Vector3(wall.transform.position.x, wall.transform.position.y + (wallHeight * 0.5f), wall.transform.position.z);
+                
                 wall.transform.parent = chunk.transform;
             }
         }
@@ -146,9 +147,15 @@ namespace Assets.Scripts.Levels
             Vector3 scale = direction == 0 ? new Vector3(Random.Range(minWallWidth, maxWallWidth), wallHeight, wallThickness) : new Vector3(wallThickness, wallHeight, Random.Range(minWallWidth, maxWallWidth));
             nextWall.transform.localScale = scale;
 
-            float offsetX = direction == 1 || direction == 2 ? (previousWall.localScale.x * 0.5f) - (nextWall.localScale.x * 0.5f) : (previousWall.localScale.x * 0.5f) + (nextWall.localScale.x * 0.5f);
-            float offsetZ = direction == 0 ? 0 : (direction == 1 ? (previousWall.localScale.z * 0.5f) + (nextWall.localScale.z * 0.5f) : -(nextWall.localScale.z * 0.5f) - (previousWall.localScale.z * 0.5f));
+            //float offsetX = direction == 1 || direction == 2 ? (previousWall.localScale.x * 0.5f) + (nextWall.localScale.x * 0.5f) : (previousWall.localScale.x * 0.5f) + (nextWall.localScale.x * 0.5f);
+            //float offsetZ = direction == 0 ? 0 : (direction == 1 ? (previousWall.localScale.z * 0.5f) + (nextWall.localScale.z * 0.5f) : -(nextWall.localScale.z * 0.5f) - (previousWall.localScale.z * 0.5f));
 
+            float supplementaryZ = previousWall.localScale.z > previousWall.localScale.x ? 10: 0;
+
+            float offsetX = (previousWall.localScale.x + nextWall.localScale.x) * 0.5f;
+            float offsetZ = direction == 1 ? (nextWall.localScale.z - previousWall.localScale.z) * 0.5f + supplementaryZ : (direction == 2 ? -(nextWall.localScale.z - previousWall.localScale.z) * 0.5f : 0);
+
+            // * (direction == 1 ? 1 : (direction == 2 ? -1 : 0)
             return new Vector3(previousWall.position.x + offsetX, previousWall.position.y, previousWall.position.z + offsetZ);
         }
 
@@ -156,7 +163,6 @@ namespace Assets.Scripts.Levels
         {
             List<GameObject> toDestroy = new List<GameObject>();
             Bounds chunkBounds = new Bounds(transform.TransformPoint(chunk.transform.position), chunk.transform.localScale * 10);
-            Debug.Log(chunkBounds);
 
             for (int i = 0; i < chunkWalls.Count; i++)
             {
@@ -206,6 +212,6 @@ namespace Assets.Scripts.Levels
             MeshRenderer renderer = wall.GetComponent<MeshRenderer>();
 
             return wall;
-        }
+        }*/
     }
 }
