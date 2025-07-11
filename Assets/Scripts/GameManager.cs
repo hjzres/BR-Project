@@ -8,6 +8,8 @@ namespace Assets.Scripts
     // Handles entity count, multiplayer changes + syncing
     public class GameManager : MonoBehaviour
     {
+        public static GameManager instance;
+
         public Transform player;
         public bool updateChunks = true;
         public RenderHelper renderHelper;
@@ -15,6 +17,7 @@ namespace Assets.Scripts
 
         [Header("Chunking")]
         public int size = 150;
+        public int viewDistanceInChunks = 3;
 
         [Header("Test Materials")]
         public Material green;
@@ -23,12 +26,14 @@ namespace Assets.Scripts
 
         private void Awake()
         {
+            instance = this;
             renderHelper = new RenderHelper();
+            renderHelper.loadedChunks.Clear();
         }
 
         private void Update()
         {
-            
+            renderHelper.UpdateChunks(player.position);
         }
 
         [Button]

@@ -7,6 +7,10 @@ namespace Assets.Scripts
 {
     public class RenderHelper
     {
+        public Dictionary<float, Chunk> loadedChunks = new Dictionary<float, Chunk>();
+
+        private RaycastHit hit;
+
         public struct Chunk
         {
             public GameObject meshObject;
@@ -24,7 +28,7 @@ namespace Assets.Scripts
                 int[] triangles = new int[6];
                 float halfSize = size * 0.5f; // Used to center GameObject with position cursor.
 
-                GameObject meshObject = new GameObject("Mesh", typeof(MeshFilter), typeof(MeshRenderer), typeof(MeshCollider));
+                GameObject meshObject = new GameObject("Mesh", typeof(MeshFilter), typeof(MeshRenderer), typeof(BoxCollider));
                 Vector3 meshPosition = meshObject.transform.position;
                 meshObject.transform.position = new Vector3(position.x, 0, position.y);
 
@@ -56,11 +60,42 @@ namespace Assets.Scripts
 
                 return meshObject;
             }
+
+            public void SetVisibility(bool visible)
+            {
+                meshObject.SetActive(visible);
+            }
         }
 
+        public void UpdateChunks(Vector3 focusPosition)
+        {
+            Vector2 localXZPos = new Vector2(focusPosition.x, focusPosition.z);
+            GameManager instance = GameManager.instance;
 
+            float playerToChunkCoordX = PlayerToChunkCoordinates(focusPosition);
+            Debug.Log(playerToChunkCoordX);
 
+            for (int i = -instance.viewDistanceInChunks; i <= instance.viewDistanceInChunks; i++)
+            {
+                float chunkCoordX = playerToChunkCoordX + (instance.size * i);
 
+                if (!loadedChunks.ContainsKey(chunkCoordX))
+                {
+                    loadedChunks.Add(chunkCoordX, new Chunk(new Vector2(chunkCoordX, 0), instance.white, instance.size));
+                } 
+            }
+        }
+
+        // TODO: Change to a mathematical checker instead of raycasts
+        private float PlayerToChunkCoordinates(Vector3 localFocusPosition)
+        {
+            if (Physics.Raycast(localFocusPosition, Vector3.up, out hit))
+            {
+                Debug.Log(hit.collider.gameObject.name);
+            }
+            
+            return 0f; 
+        }
 
 
 

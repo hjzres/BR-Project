@@ -131,10 +131,9 @@ GameObject:
   - component: {fileID: 64688742}
   - component: {fileID: 64688741}
   - component: {fileID: 64688740}
-  - component: {fileID: 64688744}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Player Reference
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -224,39 +223,12 @@ Transform:
   m_GameObject: {fileID: 64688739}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.2, y: 1, z: -0.2}
+  m_LocalPosition: {x: 0, y: 3.168, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!54 &64688744
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 64688739}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!1 &624022775
 GameObject:
   m_ObjectHideFlags: 0
@@ -459,6 +431,7 @@ MonoBehaviour:
   updateChunks: 1
   drawGizmos: 0
   size: 200
+  viewDistanceInChunks: 3
   green: {fileID: 2100000, guid: 849af4711f31195448994d37d3ee98dd, type: 2}
   red: {fileID: 2100000, guid: d8d5bc8d575dce545b0a0d2259ae7a7d, type: 2}
   white: {fileID: 2100000, guid: 8568c1dadcc104344a22a950c3608b20, type: 2}
