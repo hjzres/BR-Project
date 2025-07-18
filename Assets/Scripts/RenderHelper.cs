@@ -15,9 +15,12 @@ namespace Assets.Scripts
         {
             public GameObject meshObject;
 
+            public Bounds bounds;
+
             public Chunk(Vector2 position, Material material, int size)
             {
                 meshObject = CreateChunk(position, material, size);
+                bounds = new Bounds(new Vector3(position.x, 0, position.y), new Vector3(size, 10f, size));
             }
 
             public static GameObject CreateChunk(Vector2 position, Material material, int size = 1)
@@ -89,10 +92,7 @@ namespace Assets.Scripts
         // TODO: Change to a mathematical checker instead of raycasts
         private float PlayerToChunkCoordinates(Vector3 localFocusPosition)
         {
-            if (Physics.Raycast(localFocusPosition, Vector3.up, out hit))
-            {
-                Debug.Log(hit.collider.gameObject.name);
-            }
+            
             
             return 0f; 
         }
