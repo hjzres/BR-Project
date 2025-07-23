@@ -2,45 +2,29 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using NaughtyAttributes;
+using Assets.Scripts.Player;
 
+// Handles entity count, multiplayer changes + syncing
 namespace Assets.Scripts
 {
-    // Handles entity count, multiplayer changes + syncing
     public class GameManager : MonoBehaviour
     {
-        public static GameManager instance;
+        public static GameManager Instance;
 
-        public Transform player;
-        public bool updateChunks = true;
-        public RenderHelper renderHelper;
-        public bool drawGizmos = false;
-
-        [Header("Chunking")]
-        public int size = 150;
-        public int viewDistanceInChunks = 3;
-
-        [Header("Test Materials")]
+        [Header("TEST MATERIALS")]
         public Material green;
         public Material red;
         public Material white;
 
+        [Header("GIZMOS")]
+        public bool drawGizmos = false;
+
         private void Awake()
         {
-            instance = this;
-            renderHelper = new RenderHelper();
-            renderHelper.loadedChunks.Clear();
-        }
-
-        private void Update()
-        {
-            renderHelper.UpdateChunks(player.position);
-        }
-
-        [Button]
-        public void GenerateMesh()
-        {
-            renderHelper = new RenderHelper();
-            RenderHelper.Chunk chunk = new RenderHelper.Chunk(new Vector2(0, 0), white, size);
+            if (Instance == null)
+            {
+                Instance = this;
+            }
         }
 
         private void OnDrawGizmos()
