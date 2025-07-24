@@ -1,5 +1,6 @@
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
+using NaughtyAttributes;
 
 public enum ChunkType
 {
@@ -34,13 +35,21 @@ namespace Assets.Scripts.Levels
             public GameObject meshObject;
             public readonly ChunkType id;
 
-            public Chunk(Vector2 position, int size, System.Random prng)
+            public Chunk(Vector2 position, int size, System.Random prng, bool manualSpecialization = false, ChunkType chunkType = ChunkType.Maze)
             {
                 meshObject = CreateChunk(position, size);
 
-                int rand = prng.Next(1, 100); // TODO: fix seeding cause it's not fully working and idfk why...
-                id = rand < 85 ? ChunkType.Maze : (rand >= 85 && rand < 95 ? ChunkType.Pitfalls : (rand >= 95 && rand <= 98 ? ChunkType.Grid : ChunkType.Distorted)); // TODO: use some actual algorithm.
-                meshObject.GetComponent<MeshRenderer>().material = SelectMaterial();
+                if (!manualSpecialization)
+                {
+                    int rand = prng.Next(1, 100); // TODO: fix seeding cause it's not fully working and idfk why...
+                    id = rand < 85 ? ChunkType.Maze : (rand >= 85 && rand < 95 ? ChunkType.Pitfalls : (rand >= 95 && rand <= 98 ? ChunkType.Grid : ChunkType.Distorted)); // TODO: use some actual algorithm.
+                    meshObject.GetComponent<MeshRenderer>().material = SelectMaterial();
+                }
+
+                else
+                {
+                    id = chunkType;
+                }
             }
 
             public GameObject CreateChunk(Vector2 position, int size)
@@ -150,6 +159,7 @@ namespace Assets.Scripts.Levels
 
                             loadedChunks.Add(coord, newChunk);
                             newChunk.meshObject.transform.parent = chunkParent;
+                            SpecializeChunk(newChunk);
                         }
 
                         else
@@ -164,6 +174,68 @@ namespace Assets.Scripts.Levels
             {
                 return;
             }
+        }
+
+        #region TEST FUNCTIONS
+
+        [Button]
+        public void GenerateChunk()
+        {
+            Chunk chunk = new Chunk(Vector2.zero, chunkSize, prng, true, ChunkType.Maze);
+            SpecializeChunk(chunk);
+            
+        }
+
+        #endregion
+
+        private void SpecializeChunk(Chunk chunkData)
+        {
+            if (chunkData == null)
+                return;
+
+            switch (chunkData.id)
+            {
+                case ChunkType.Maze:
+                    Debug.Log("Cased");
+                    GenerateMaze();
+                    break;
+
+                case ChunkType.Pitfalls:
+                    GeneratePitfalls();
+                    break;
+
+                case ChunkType.Grid:
+                    GenerateGrid();
+                    break;
+
+                case ChunkType.Distorted:
+                    GenerateDistortedMaze();
+                    break;
+
+                default:
+                    Debug.LogError("Chunk " + chunkData.meshObject.name + "could not specialize.");
+                    return;
+            }
+        }
+
+        private void GenerateMaze()
+        {
+            Debug.Log("Working");
+        }
+
+        private void GeneratePitfalls()
+        {
+
+        }
+
+        private void GenerateGrid()
+        {
+
+        }
+
+        private void GenerateDistortedMaze()
+        {
+
         }
     }
 }
