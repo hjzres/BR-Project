@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
-using static Assets.Scripts.Utilites;
+using static Assets.Scripts.Utilities;
 
 namespace Assets.Scripts
 {

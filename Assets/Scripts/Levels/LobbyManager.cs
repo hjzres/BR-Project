@@ -1,7 +1,13 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using static Assets.Scripts.RenderHelper;
+
+public enum ChunkType
+{
+    Maze,
+    Pitfalls,
+    Grid,
+    Distorted
+}
 
 namespace Assets.Scripts.Levels
 {
@@ -17,18 +23,27 @@ namespace Assets.Scripts.Levels
         private RaycastHit chunkHit = new RaycastHit();
         private Transform chunkParent;
 
+        [Header("TESTING CONDITIONS")]
+        public bool useChunking = true;
+
         public Dictionary<Vector2, Chunk> loadedChunks = new Dictionary<Vector2, Chunk>();
+        private System.Random prng;
 
         public class Chunk
         {
             public GameObject meshObject;
+            public readonly ChunkType id;
 
-            public Chunk(Vector2 position, int size, Material material)
+            public Chunk(Vector2 position, int size, System.Random prng)
             {
-                meshObject = CreateChunk(position, size, material);
+                meshObject = CreateChunk(position, size);
+
+                int rand = prng.Next(1, 100); // TODO: fix seeding cause it's not fully working and idfk why...
+                id = rand < 85 ? ChunkType.Maze : (rand >= 85 && rand < 95 ? ChunkType.Pitfalls : (rand >= 95 && rand <= 98 ? ChunkType.Grid : ChunkType.Distorted)); // TODO: use some actual algorithm.
+                meshObject.GetComponent<MeshRenderer>().material = SelectMaterial();
             }
 
-            public static GameObject CreateChunk(Vector2 position, int size, Material material)
+            public GameObject CreateChunk(Vector2 position, int size)
             {
                 // Specifically set for optimization, two triangles is enough
                 Vector3[] vertices = new Vector3[4];
@@ -57,10 +72,14 @@ namespace Assets.Scripts.Levels
                 mesh.RecalculateNormals();
 
                 meshObject.GetComponent<MeshFilter>().mesh = mesh;
-                meshObject.GetComponent<MeshRenderer>().material = material;
                 meshObject.GetComponent<MeshCollider>().sharedMesh = mesh;
 
                 return meshObject;
+            }
+
+            private Material SelectMaterial() // Testing chunk type ONLY
+            {
+                return id == ChunkType.Maze ? GameManager.Instance.white : (id == ChunkType.Pitfalls ? GameManager.Instance.red : (id == ChunkType.Grid ? GameManager.Instance.green : GameManager.Instance.blue));
             }
 
             public void UpdateChunkVisibility() // TODO: check if player is too far from chunk edge ig
@@ -79,12 +98,20 @@ namespace Assets.Scripts.Levels
 
         private void Start()
         {
-            GenerateSpawnArea();
+            prng = new System.Random(GameManager.Instance.seed);
+
+            if (useChunking)
+            {
+                GenerateSpawnArea();
+            }
         }
 
         private void LateUpdate()
         {
-            UpdateChunks();
+            if (useChunking)
+            {
+                UpdateChunks();   
+            }
         }
 
         private void GenerateSpawnArea()
@@ -96,7 +123,7 @@ namespace Assets.Scripts.Levels
                 for (int y = -viewDistanceInChunks; y <= viewDistanceInChunks; y++)
                 {
                     Vector2 coord = new Vector2(playerChunkCoord.x + (chunkSize * x), playerChunkCoord.y + (chunkSize * y));
-                    Chunk newChunk = new Chunk(coord, chunkSize, GameManager.Instance.white);
+                    Chunk newChunk = new Chunk(coord, chunkSize, prng);
 
                     loadedChunks.Add(coord, newChunk);
                     newChunk.meshObject.transform.parent = chunkParent;
@@ -116,10 +143,10 @@ namespace Assets.Scripts.Levels
                     for (int y = -viewDistanceInChunks; y <= viewDistanceInChunks; y++)
                     {
                         Vector2 coord = new Vector2(playerChunkCoord.x + (chunkSize * x), playerChunkCoord.y + (chunkSize * y));
-                        
+
                         if (!loadedChunks.ContainsKey(coord))
                         {
-                            Chunk newChunk = new Chunk(coord, chunkSize, GameManager.Instance.white);
+                            Chunk newChunk = new Chunk(coord, chunkSize, prng);
 
                             loadedChunks.Add(coord, newChunk);
                             newChunk.meshObject.transform.parent = chunkParent;

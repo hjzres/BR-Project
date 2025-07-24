@@ -10,11 +10,13 @@ namespace Assets.Scripts
     public class GameManager : MonoBehaviour
     {
         public static GameManager Instance;
+        public int seed;
 
         [Header("TEST MATERIALS")]
         public Material green;
         public Material red;
         public Material white;
+        public Material blue;
 
         [Header("GIZMOS")]
         public bool drawGizmos = false;

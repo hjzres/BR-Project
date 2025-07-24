@@ -1,7 +1,7 @@
 using UnityEngine;
 using NaughtyAttributes;
 using static Assets.Scripts.FurnitureHelper;
-using static Assets.Scripts.Utilites;
+using static Assets.Scripts.Utilities;
 
 namespace Assets.Scripts.Test
 {

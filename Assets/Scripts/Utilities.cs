@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    public static class Utilites
+    public static class Utilities
     {
         public struct Sorting
         {
