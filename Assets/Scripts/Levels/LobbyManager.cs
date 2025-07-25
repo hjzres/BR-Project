@@ -24,11 +24,19 @@ namespace Assets.Scripts.Levels
         private RaycastHit chunkHit = new RaycastHit();
         private Transform chunkParent;
 
+        [Header("MAZE PROPERTIES")]
+        public ChunkType testType;
+        [Range(0, 1)] public float perlinThreshold;
+        public int startPointChance = 1;
+
         [Header("TESTING CONDITIONS")]
         public bool useChunking = true;
+        public Material perlinMaterial;
 
         public Dictionary<Vector2, Chunk> loadedChunks = new Dictionary<Vector2, Chunk>();
         private System.Random prng;
+
+        #region CHUNK-RELATED
 
         public class Chunk
         {
@@ -96,6 +104,8 @@ namespace Assets.Scripts.Levels
 
             }
         }
+
+        #endregion
 
         private void Awake()
         {
@@ -181,9 +191,34 @@ namespace Assets.Scripts.Levels
         [Button]
         public void GenerateChunk()
         {
-            Chunk chunk = new Chunk(Vector2.zero, chunkSize, prng, true, ChunkType.Maze);
+            Chunk chunk = new Chunk(Vector2.zero, chunkSize, prng, true, testType);
             SpecializeChunk(chunk);
-            
+        }
+
+        [Button]
+        public void GeneratePerlinMap()
+        {
+            Chunk chunk = new Chunk(Vector2.zero, chunkSize, prng, true);
+
+            Texture2D texture = new Texture2D(chunkSize, chunkSize);
+            Color[] colourMap = new Color[chunkSize * chunkSize];
+
+            for (int x = 0; x < chunkSize; x++) 
+            { 
+                for (int y = 0; y < chunkSize; y++)
+                {
+                    // All are assigned the same value and idk why.
+                    colourMap[x * chunkSize + y] = Color.Lerp(Color.black, Color.white, Mathf.PerlinNoise(x, y));
+                }
+            }
+
+            texture.SetPixels(colourMap);
+            texture.Apply();
+
+            MeshRenderer renderer = chunk.meshObject.GetComponent<MeshRenderer>();
+
+            perlinMaterial.mainTexture = texture;
+            renderer.sharedMaterial = perlinMaterial;
         }
 
         #endregion
@@ -196,20 +231,19 @@ namespace Assets.Scripts.Levels
             switch (chunkData.id)
             {
                 case ChunkType.Maze:
-                    Debug.Log("Cased");
-                    GenerateMaze();
+                    GenerateMaze(chunkData);
                     break;
 
                 case ChunkType.Pitfalls:
-                    GeneratePitfalls();
+                    GeneratePitfalls(chunkData);
                     break;
 
                 case ChunkType.Grid:
-                    GenerateGrid();
+                    GenerateGrid(chunkData);
                     break;
 
                 case ChunkType.Distorted:
-                    GenerateDistortedMaze();
+                    GenerateDistortedMaze(chunkData);
                     break;
 
                 default:
@@ -218,24 +252,41 @@ namespace Assets.Scripts.Levels
             }
         }
 
-        private void GenerateMaze()
+        private void GenerateMaze(Chunk chunkData)
         {
-            Debug.Log("Working");
+            
         }
 
-        private void GeneratePitfalls()
-        {
-
-        }
-
-        private void GenerateGrid()
+        private void GeneratePitfalls(Chunk chunkData)
         {
 
         }
 
-        private void GenerateDistortedMaze()
+        private void GenerateGrid(Chunk chunkData)
         {
 
+        }
+
+        private void GenerateDistortedMaze(Chunk chunkData)
+        {
+
+        }
+
+        #region MAZE METHODS
+
+        public struct Point
+        {
+
+        }
+
+        #endregion
+
+        private void OnDrawGizmos()
+        {
+            if (GameManager.Instance != null && GameManager.Instance.drawGizmos)
+            {
+
+            }
         }
     }
 }

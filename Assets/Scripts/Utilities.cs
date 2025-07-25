@@ -73,7 +73,23 @@ namespace Assets.Scripts
             }
         }
 
-        public struct Noise
+        public static float[,] PerlinNoiseMap(int width, int height, int seed = 0)
+        {
+            float[,] map = new float[width, height];
+            System.Random prng = new System.Random(seed);
+
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+
+                }
+            }
+
+            return map;
+        }
+
+        /*public struct Noise
         {
             [Min(1)] public int octaves;
 
@@ -150,7 +166,7 @@ namespace Assets.Scripts
             }
 
             // TODO : Voronoi noise, Simplex noise, Brownian noise, Fractal noise
-        }
+        }*/
 
         public static Transform[] RetrieveTransformsByTag(string tag)
         {
