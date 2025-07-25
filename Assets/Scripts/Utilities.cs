@@ -4,6 +4,7 @@ namespace Assets.Scripts
 {
     public static class Utilities
     {
+        // Wtf is this shit bro I really don't wanna rework this...
         public struct Sorting
         {
             public enum SortType
@@ -65,6 +66,7 @@ namespace Assets.Scripts
             }
         }
 
+        // TODO: Implement easing functions that can be used any time.
         public struct Easing
         {
             public enum EasingType
@@ -87,6 +89,28 @@ namespace Assets.Scripts
             }
 
             return map;
+        }
+
+        [Tooltip("Converts a 2D float array data into a texture that is then set to the main texture of the returned material.")]
+        public static Material NoiseToMaterial(float[,] mapToMaterialize)
+        {
+            Texture2D texture = new Texture2D(mapToMaterialize.GetLength(0), mapToMaterialize.GetLength(1));
+            Color[] colourMap = new Color[mapToMaterialize.GetLength(0) * mapToMaterialize.GetLength(1)];
+
+            for (int i = 0; i < mapToMaterialize.GetLength(0); i++)
+            {
+                for (int j = 0; j < mapToMaterialize.GetLength(1); j++)
+                {
+                    colourMap[j * mapToMaterialize.GetLength(0) + i] = Color.Lerp(Color.black, Color.white, mapToMaterialize[i, j]);
+                }
+            }
+
+            texture.SetPixels(colourMap);
+            texture.Apply();
+
+            // TODO: Create material then return it.
+
+            return null;
         }
 
         /*public struct Noise
