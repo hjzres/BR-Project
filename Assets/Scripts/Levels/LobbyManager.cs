@@ -27,11 +27,13 @@ namespace Assets.Scripts.Levels
         [Header("MAZE PROPERTIES")]
         public ChunkType testType;
         [Range(0, 1)] public float perlinThreshold;
-        public int startPointChance = 1;
+        public int maxStartPoints = 5;
 
         [Header("TESTING CONDITIONS")]
+        public bool drawGizmos;
         public bool useChunking = true;
-        public Material perlinMaterial;
+        public bool useManualSpecialization = false;
+        public Material white;
 
         public Dictionary<Vector2, Chunk> loadedChunks = new Dictionary<Vector2, Chunk>();
         private System.Random prng;
@@ -41,23 +43,11 @@ namespace Assets.Scripts.Levels
         public class Chunk
         {
             public GameObject meshObject;
-            public readonly ChunkType id;
+            public ChunkType id;
 
-            public Chunk(Vector2 position, int size, System.Random prng, bool manualSpecialization = false, ChunkType chunkType = ChunkType.Maze)
+            public Chunk(Vector2 position, int size)
             {
                 meshObject = CreateChunk(position, size);
-
-                if (!manualSpecialization)
-                {
-                    int rand = prng.Next(1, 100); // TODO: fix seeding cause it's not fully working and idfk why...
-                    id = rand < 85 ? ChunkType.Maze : (rand >= 85 && rand < 95 ? ChunkType.Pitfalls : (rand >= 95 && rand <= 98 ? ChunkType.Grid : ChunkType.Distorted)); // TODO: use some actual algorithm.
-                    meshObject.GetComponent<MeshRenderer>().material = SelectMaterial();
-                }
-
-                else
-                {
-                    id = chunkType;
-                }
             }
 
             public GameObject CreateChunk(Vector2 position, int size)
@@ -94,14 +84,26 @@ namespace Assets.Scripts.Levels
                 return meshObject;
             }
 
-            private Material SelectMaterial() // Testing chunk type ONLY
-            {
-                return id == ChunkType.Maze ? GameManager.Instance.white : (id == ChunkType.Pitfalls ? GameManager.Instance.red : (id == ChunkType.Grid ? GameManager.Instance.green : GameManager.Instance.blue));
-            }
-
             public void UpdateChunkVisibility() // TODO: check if player is too far from chunk edge ig
             {
 
+            }
+
+            public Vector2 RetrieveDimensionsInWorldSpace(bool getWidth, bool getHeight, int chunkSize)
+            {
+                if (this == null)
+                {
+                    Debug.LogError("Cannot calculate dimensions as the chunk is not generated!");
+                    return Vector2.zero;
+                }
+
+                int halfSize = chunkSize / 2;
+
+                Vector3 chunkPosition = meshObject.transform.position;
+                float min = getWidth ? chunkPosition.x - halfSize : chunkPosition.y - halfSize;
+                float max = getWidth ? chunkPosition.x + halfSize : chunkPosition.y + halfSize;
+
+                return new Vector2(min, max);
             }
         }
 
@@ -119,35 +121,18 @@ namespace Assets.Scripts.Levels
         {
             prng = new System.Random(GameManager.Instance.seed);
 
-            if (useChunking)
-            {
-                GenerateSpawnArea();
-            }
+            GenerateSpawnArea();
         }
 
         private void LateUpdate()
         {
-            if (useChunking)
-            {
-                UpdateChunks();   
-            }
+            UpdateChunks();
         }
 
         private void GenerateSpawnArea()
         {
             playerChunkCoord = Vector2.zero;
-
-            for (int x = -viewDistanceInChunks; x <= viewDistanceInChunks; x++)
-            {
-                for (int y = -viewDistanceInChunks; y <= viewDistanceInChunks; y++)
-                {
-                    Vector2 coord = new Vector2(playerChunkCoord.x + (chunkSize * x), playerChunkCoord.y + (chunkSize * y));
-                    Chunk newChunk = new Chunk(coord, chunkSize, prng);
-
-                    loadedChunks.Add(coord, newChunk);
-                    newChunk.meshObject.transform.parent = chunkParent;
-                }
-            }
+            HandleChunking();
         }
 
         // TODO: remove dependence on raycast and do proper math to obtain correct player chunk coordinate.
@@ -156,7 +141,16 @@ namespace Assets.Scripts.Levels
             if (Physics.Raycast(playerTransform.position, Vector3.down, out chunkHit, rayDistance))
             {
                 playerChunkCoord = new Vector2(chunkHit.collider.transform.position.x, chunkHit.collider.transform.position.z);
+                HandleChunking();
+            }
 
+            return;
+        }
+
+        private void HandleChunking()
+        {
+            if (useChunking)
+            {
                 for (int x = -viewDistanceInChunks; x <= viewDistanceInChunks; x++)
                 {
                     for (int y = -viewDistanceInChunks; y <= viewDistanceInChunks; y++)
@@ -165,7 +159,9 @@ namespace Assets.Scripts.Levels
 
                         if (!loadedChunks.ContainsKey(coord))
                         {
-                            Chunk newChunk = new Chunk(coord, chunkSize, prng);
+                            Chunk newChunk = new Chunk(coord, chunkSize);
+                            newChunk.id = SelectChunkType();
+                            newChunk.meshObject.GetComponent<MeshRenderer>().sharedMaterial = SelectMaterial(newChunk.id);
 
                             loadedChunks.Add(coord, newChunk);
                             newChunk.meshObject.transform.parent = chunkParent;
@@ -177,13 +173,25 @@ namespace Assets.Scripts.Levels
                             loadedChunks[coord].UpdateChunkVisibility(); // Has to be implemented
                         }
                     }
-                }
+                }   
+            }
+        }
+
+        private ChunkType SelectChunkType()
+        {
+            if (useManualSpecialization)
+            {
+                return testType;
             }
 
-            else
-            {
-                return;
-            }
+            int randNum = prng.Next(1, 100);
+
+            return randNum < 85 ? ChunkType.Maze : (randNum >= 85 && randNum < 95 ? ChunkType.Pitfalls : (randNum >= 95 && randNum <= 98 ? ChunkType.Grid : ChunkType.Distorted)); // TODO: use some actual algorithm.
+        }
+
+        private Material SelectMaterial(ChunkType chunkType)
+        {
+            return chunkType == ChunkType.Maze ? GameManager.Instance.white : (chunkType == ChunkType.Pitfalls ? GameManager.Instance.red : (chunkType == ChunkType.Grid ? GameManager.Instance.blue : GameManager.Instance.green));
         }
 
         #region TEST FUNCTIONS
@@ -191,16 +199,16 @@ namespace Assets.Scripts.Levels
         [Button]
         public void GenerateChunk()
         {
-            Chunk chunk = new Chunk(Vector2.zero, chunkSize, prng, true, testType);
+            Chunk chunk = new Chunk(Vector2.zero, chunkSize);
             SpecializeChunk(chunk);
         }
 
         [Button]
         public void GeneratePerlinMap()
         {
-            Chunk chunk = new Chunk(Vector2.zero, chunkSize, prng, true);
+            Chunk chunk = new Chunk(Vector2.zero, chunkSize);
 
-            Texture2D texture = new Texture2D(chunkSize, chunkSize);
+            /*Texture2D texture = new Texture2D(chunkSize, chunkSize);
             Color[] colourMap = new Color[chunkSize * chunkSize];
 
             for (int x = 0; x < chunkSize; x++) 
@@ -218,7 +226,14 @@ namespace Assets.Scripts.Levels
             MeshRenderer renderer = chunk.meshObject.GetComponent<MeshRenderer>();
 
             perlinMaterial.mainTexture = texture;
-            renderer.sharedMaterial = perlinMaterial;
+            renderer.sharedMaterial = perlinMaterial;*/
+        }
+
+        [Button]
+        public void FloorCoordinate()
+        {
+            Debug.Log(Mathf.Floor(playerTransform.position.x / (chunkSize * viewDistanceInChunks)));
+            Debug.Log(Mathf.Floor(playerTransform.position.z / (chunkSize * viewDistanceInChunks)));
         }
 
         #endregion
@@ -247,7 +262,7 @@ namespace Assets.Scripts.Levels
                     break;
 
                 default:
-                    Debug.LogError("Chunk " + chunkData.meshObject.name + "could not specialize.");
+                    Debug.LogError("Chunk " + chunkData.meshObject.name + "could not specialize! Make sure the Chunk ID is defined.");
                     return;
             }
         }
@@ -274,16 +289,31 @@ namespace Assets.Scripts.Levels
 
         #region MAZE METHODS
 
-        public struct Point
+        private struct Point
         {
+            public Vector3 position;
+            public Vector3 left;
+            public Vector3 up;
+            public Vector3 right;
+            public Vector3 down;
 
+
+            public Point(Vector3 position)
+            {
+                this.position = position;
+
+                left = -Vector3.right;
+                up = Vector3.forward;
+                right = Vector3.right;
+                down = -Vector3.forward;
+            }
         }
 
         #endregion
 
         private void OnDrawGizmos()
         {
-            if (GameManager.Instance != null && GameManager.Instance.drawGizmos)
+            if (GameManager.Instance != null && drawGizmos)
             {
 
             }
