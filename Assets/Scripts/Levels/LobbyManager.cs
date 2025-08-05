@@ -25,7 +25,6 @@ namespace Assets.Scripts.Levels
         private Transform chunkParent;
 
         [Header("MAZE PROPERTIES")]
-        public ChunkType testType;
         [Range(0, 1)] public float perlinThreshold;
         public int maxStartPoints = 5;
 
@@ -33,21 +32,24 @@ namespace Assets.Scripts.Levels
         public bool drawGizmos;
         public bool useChunking = true;
         public bool useManualSpecialization = false;
+        public ChunkType testType;
         public Material white;
 
         public Dictionary<Vector2, Chunk> loadedChunks = new Dictionary<Vector2, Chunk>();
-        private System.Random prng;
+        public System.Random prng;
 
         #region CHUNK-RELATED
 
         public class Chunk
         {
             public GameObject meshObject;
+            public Material material;
             public ChunkType id;
 
             public Chunk(Vector2 position, int size)
             {
                 meshObject = CreateChunk(position, size);
+                material = meshObject.GetComponent<MeshRenderer>().sharedMaterial;
             }
 
             public GameObject CreateChunk(Vector2 position, int size)
@@ -191,6 +193,11 @@ namespace Assets.Scripts.Levels
 
         private Material SelectMaterial(ChunkType chunkType)
         {
+            if (useManualSpecialization)
+            {
+                return white;
+            }
+
             return chunkType == ChunkType.Maze ? GameManager.Instance.white : (chunkType == ChunkType.Pitfalls ? GameManager.Instance.red : (chunkType == ChunkType.Grid ? GameManager.Instance.blue : GameManager.Instance.green));
         }
 
@@ -200,6 +207,7 @@ namespace Assets.Scripts.Levels
         public void GenerateChunk()
         {
             Chunk chunk = new Chunk(Vector2.zero, chunkSize);
+            chunk.material = white;
             SpecializeChunk(chunk);
         }
 
